@@ -14,6 +14,7 @@
   --laranja:#F5A623; --laranja-dk:#D4881A; --laranja-lt:#FEF3DC;
   --verde:#1A5E38; --verde-lt:#E6F4ED;
   --roxo:#5B21B6; --roxo-lt:#EDE9FE;
+  --laranja2:#C0440A; --laranja2-lt:#FDEEE7;
   --cinza-bg:#F0F2F7; --cinza-bd:#DCDCDC; --cinza-tx:#555;
   --vermelho:#b71c1c; --vermelho-lt:#FFEBEE;
   --branco:#fff;
@@ -102,6 +103,11 @@ body{display:flex;justify-content:center;padding:2rem 1rem 4rem;min-height:100vh
 .result-row.total-row.digital{background:var(--roxo)}
 .badge-digital{background:var(--roxo-lt);color:var(--roxo)}
 
+/* Sublimação header */
+.result-header.sublimacao{background:var(--laranja2)}
+.result-row.total-row.sublimacao{background:var(--laranja2)}
+.badge-sublimacao{background:var(--laranja2-lt);color:var(--laranja2)}
+
 /* Avisos */
 .aviso-box{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;font-size:11px;line-height:1.5;border-left:3px solid;border-radius:0 0 10px 10px}
 .aviso-minimo{background:var(--laranja-lt);border-color:var(--laranja);color:#7A4A00}
@@ -143,7 +149,7 @@ body{display:flex;justify-content:center;padding:2rem 1rem 4rem;min-height:100vh
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--laranja)" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
       Calculadora de Gravação
     </h1>
-    <p>Silk · Tampografia · Laser · Digital UV — XBZ Brindes</p>
+    <p>Silk · Tampografia · Laser · Digital UV · Sublimação — XBZ Brindes</p>
   </div>
 
   <div class="body-wrap">
@@ -232,6 +238,12 @@ body{display:flex;justify-content:center;padding:2rem 1rem 4rem;min-height:100vh
         <p>Impressão colorida direta. Mínimo de <strong>R$ 110,00</strong> ou <strong>R$ 123,00</strong> conforme o item. Preço por lado.</p>
       </div>
     </div>
+    <div class="info-grid" style="grid-template-columns:1fr">
+      <div class="info-box" style="border-right:none">
+        <div class="info-box-title" style="color:var(--laranja2)">Sublimação</div>
+        <div class="info-box-price" style="color:var(--laranja2)">Sem fotolito</div>
+        <p>Impressão colorida full color. Mínimo <strong>R$ 150,00</strong> (Gr.01/02) ou <strong>R$ 300,00</strong> (Gr.03 – dados variáveis). Enviar 15% a mais de peças para reposição.</p>
+      </div>
     <div class="info-aviso" style="background:var(--azul-light);border-color:var(--azul)">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--azul)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       <p style="color:var(--azul)">Nomes diversos: + R$ 1,50 por nome. Para artes complexas, consulte o time de vendas.</p>
@@ -268,6 +280,57 @@ body{display:flex;justify-content:center;padding:2rem 1rem 4rem;min-height:100vh
 const FOTOLITO_SILK    = 35.00;
 const FOTOLITO_LASER   =  0.00;  // laser não tem fotolito
 const FOTOLITO_DIGITAL =  0.00;  // digital UV também não tem fotolito
+const FOTOLITO_SUBLI   =  0.00;  // sublimação também não tem fotolito
+
+
+// ─── TABELA SUBLIMAÇÃO ────────────────────────────────────────────────────────
+// Sem fotolito/clichê. Mínimo R$ 150,00 (Gr01/02) ou R$ 300,00 (Gr03).
+
+const SUBLIMACAO = {
+
+  squeeze_caneca_gr1: {
+    codigos: ['squeeze-subli','caneca-subli'],
+    nome: 'Squeeze e Canecas Gr.01 – 1 ou 2 Lados',
+    badge: 'badge-sublimacao',
+    minimo: 150.00,
+    faixas: [
+      { ate: 40,       preco: 150.00 / 40 },
+      { ate: Infinity, preco: 3.75 },
+    ],
+  },
+  squeeze_caneca_gr2: {
+    codigos: ['squeeze-subli360','caneca-subli360'],
+    nome: 'Squeeze e Canecas Gr.02 – Gravação 360°',
+    badge: 'badge-sublimacao',
+    minimo: 150.00,
+    faixas: [
+      { ate: 32,       preco: 150.00 / 32 },
+      { ate: Infinity, preco: 4.60 },
+    ],
+  },
+  squeeze_caneca_gr3: {
+    codigos: ['squeeze-subli-var','caneca-subli-var'],
+    nome: 'Squeeze e Canecas Gr.03 – Dados Variáveis',
+    badge: 'badge-sublimacao',
+    minimo: 300.00,
+    faixas: [
+      { ate: 38,       preco: 300.00 / 38 },
+      { ate: Infinity, preco: 7.80 },
+    ],
+  },
+  mousepad: {
+    codigos: ['mousepad'],
+    nome: 'Mousepads Sublimáticos (BRANCOS)',
+    badge: 'badge-sublimacao',
+    minimo: 250.00,
+    faixas: [
+      { ate: 89,       preco: 250.00 / 89 },
+      { ate: 500,       preco: 2.80 },
+      { ate: 2000,       preco: 2.50 },
+      { ate: Infinity, preco: 2.25 },
+    ],
+  },
+};
 
 
 // ─── TABELA DIGITAL UV ────────────────────────────────────────────────────────
@@ -288,13 +351,23 @@ const DIGITAL_UV = {
     ],
   },
   caneta_plastica_eco: {
-    codigos: ['caneta'],
+    codigos: ['caneta','caneta-plastica','13690','18520'],
     nome: 'Caneta Plástica & Ecológica / Lápis Simples',
     badge: 'badge-digital',
-    minimo: 110.00,
+    minimo: 130.00,
     faixas: [
-      { ate: 379,      preco: 110.00 / 379 },
+      { ate: 448,      preco: 130.00 / 448 },
       { ate: Infinity, preco: 0.29 },
+    ],
+  },
+  caneta_plastica_suporte: {
+    codigos: ['caneta','13499'],
+    nome: 'Caneta Plástica com Suporte',
+    badge: 'badge-digital',
+    minimo: 130.00,
+    faixas: [
+      { ate: 288,      preco: 130.00 / 288 },
+      { ate: Infinity, preco: 0.45 },
     ],
   },
   caneta_clip: {
@@ -307,6 +380,117 @@ const DIGITAL_UV = {
       { ate: Infinity, preco: 0.55 },
     ],
   },
+  // ── CHAVEIRO ABRIDOR ──────────────────────────────────────────────────────────
+  chaveiro_abridor: {
+    codigos: ['chaveiro-abridor','09824'],
+    nome: 'Chaveiro Abridor - Metal',
+    badge: 'badge-digital',
+    minimo: 170.00,
+    faixas: [
+      { ate: 141,      preco: 170.00 / 141 },
+      { ate: Infinity, preco: 1.20 },
+    ],
+  },
+  // ── MOLESKINE - CADERNO ──────────────────────────────────────────────────────────
+
+  //moleskine branco pequeno
+  moleskine_pequeno_branco_40x40: {
+    codigos: ['moleskine','caderno','14091'],
+    nome: 'Moleskine/Caderno Branco Pequeno-90x140mm Gravação até 40x40mm',
+    badge: 'badge-digital',
+    minimo: 123.00,
+    faixas: [
+      { ate: 77,      preco: 123.00 / 77 },
+      { ate: Infinity, preco: 1.60 },
+    ],
+  },
+  moleskine_pequeno_branco_70x85: {
+    codigos: ['moleskine','caderno','14091'],
+    nome: 'Moleskine/Caderno Branco Pequeno-90x140mm Gravação até 70x85mm',
+    badge: 'badge-digital',
+    minimo: 123.00,
+    faixas: [
+      { ate: 49,      preco: 123.00 / 49 },
+      { ate: Infinity, preco: 2.50 },
+    ],
+  },
+  moleskine_pequeno_branco_total: {
+    codigos: ['moleskine','caderno','14091'],
+    nome: 'Moleskine/Caderno Branco Pequeno 90x140mm Gravação Total (Verificar Valor de Manuseio)',
+    badge: 'badge-digital',
+    minimo: 123.00,
+    faixas: [
+      { ate: 32,      preco: 123.00 / 32 },
+      { ate: Infinity, preco: 3.75 },
+    ],
+  },
+
+  //moleskine colorido pequeno
+  moleskine_pequeno_colorido_40x40: {
+    codigos: ['moleskine','caderno','14091'],
+    nome: 'Moleskine/Caderno Colorido Pequeno-90x140mm Gravação até 40x40mm',
+    badge: 'badge-digital',
+    minimo: 123.00,
+    faixas: [
+      { ate: 51,      preco: 123.00 / 51 },
+      { ate: Infinity, preco: 2.40 },
+    ],
+  },
+  moleskine_pequeno_colorido_70x85: {
+    codigos: ['moleskine','caderno','14091'],
+    nome: 'Moleskine/Caderno Colorido Pequeno-90x140mm Gravação até 70x85mm',
+    badge: 'badge-digital',
+    minimo: 123.00,
+    faixas: [
+      { ate: 21,      preco: 123.00 / 21 },
+      { ate: Infinity, preco: 5.70 },
+    ],
+  },
+  moleskine_pequeno_colorido_total: {
+    codigos: ['moleskine','caderno','14091'],
+    nome: 'Moleskine/Caderno Colorido Pequeno 90x140mm Gravação Total (Verificar Valor de Manuseio)',
+    badge: 'badge-digital',
+    minimo: 123.00,
+    faixas: [
+      { ate: 32,      preco: 123.00 / 32 },
+      { ate: Infinity, preco: 3.75 },
+    ],
+  },
+
+  //moleskine médio branco
+  moleskine_medio_branco_60x35: {
+    codigos: ['moleskine','caderno','12514'],
+    nome: 'Moleskine/Caderno Branco Médio-130x180mm Gravação até 60x35mm',
+    badge: 'badge-digital',
+    minimo: 123.00,
+    faixas: [
+      { ate: 44,      preco: 123.00 / 44 },
+      { ate: Infinity, preco: 2.75 },
+    ],
+  },
+  moleskine_medio_branco_70x90: {
+    codigos: ['moleskine','caderno','12514'],
+    nome: 'Moleskine/Caderno Branco Médio-130x180mm Gravação até 70x90mm',
+    badge: 'badge-digital',
+    minimo: 123.00,
+    faixas: [
+      { ate: 34,      preco: 123.00 / 34 },
+      { ate: Infinity, preco: 3.60 },
+    ],
+  },
+  moleskine_medio_branco_total: {
+    codigos: ['moleskine','caderno','12514'],
+    nome: 'Moleskine/Caderno Branco Médio-130x180mm Gravação Total (Verificar Valor de Manuseio)',
+    badge: 'badge-digital',
+    minimo: 150.00,
+    faixas: [
+      { ate: 21,      preco: 150.00 / 21 },
+      { ate: Infinity, preco: 7 },
+    ],
+  },
+
+  //moleskine médio colorido
+
 
   // ── FONES DE OUVIDO ──────────────────────────────────────────────────────────
   fone_pequeno_12789: {
@@ -339,6 +523,31 @@ const DIGITAL_UV = {
       { ate: Infinity, preco: 2.25 },
     ],
   },
+  // ── CABO DE 3 PONTAS ─────────────────────────────────────────────────────────
+  cabo: {
+    codigos: ['cabo','10338'],
+    nome: 'Cabo USB Retrátil 3 em 1 Digital UV – Grav. até 38x38mm',
+    badge: 'badge-digital',
+    minimo: 150.00,
+    faixas: [
+      { ate: 100,       preco: 150.00 / 100 },
+      { ate: Infinity, preco: 1.5 },
+    ],
+  },
+
+  // ── PORTA JÓIAS ─────────────────────────────────────────────────────────
+  porta_joia: {
+    codigos: ['porta-joia','01622B','01622'],
+    nome: 'Porta-Jóia Couro Sintético Digital UV – Grav. até 30x30mm',
+    badge: 'badge-digital',
+    minimo: 100.00,
+    faixas: [
+      { ate: 33,       preco: 100.00 / 33 },
+      { ate: 500,       preco: 3 },
+      { ate: 1000,       preco: 2.5 },
+      { ate: Infinity, preco: 2 },
+    ],
+  },
 
   // ── CAIXINHAS DE SOM ─────────────────────────────────────────────────────────
   caixinha_som_12926: {
@@ -369,6 +578,16 @@ const DIGITAL_UV = {
     faixas: [
       { ate: 46,       preco: 300.00 / 46 },
       { ate: Infinity, preco: 6.50 },
+    ],
+  },
+  caixinha_som_tecido: {
+    codigos: ['caixa-de-som','08003'],
+    nome: 'Caixinha de Som Tecido Digital UV',
+    badge: 'badge-digital',
+    minimo: 300.00,
+    faixas: [
+      { ate: 42,       preco: 300.00 / 42 },
+      { ate: Infinity, preco: 7 },
     ],
   },
 
@@ -556,7 +775,7 @@ const SILK = {
 
   // ── CANETAS ─────────────────────────────────────────────────────────────────
   canetas: {
-    codigos: ['caneta'],
+    codigos: ['caneta','13690'],
     nome: 'Canetas Plásticas - Lápis',
     badge: 'badge-caneta',
     minimo: 250.00,
@@ -568,7 +787,7 @@ const SILK = {
 
   // ── CADERNOS ─────────────────────────────────────────────────────────────────
   caderno_pequeno: {
-    codigos: ['05067','05049','12244','12398'],
+    codigos: ['moleskine','caderno','05067','05049','12244','12398'],
     nome: 'Caderneta Tipo Moleskine / Blocos / Caderno Pequenos',
     badge: 'badge-caderno',
     minimo: 160.00,
@@ -630,7 +849,7 @@ const SILK = {
     ],
   },
   chaveiro: {
-    codigos: ['09824','04011'],
+    codigos: ['chaveiro-abridor','09824','04011'],
     nome: 'Chaveiros de Metal / Porta Óculos',
     badge: 'badge-outro',
     minimo: 160.00,
@@ -792,7 +1011,7 @@ const SILK = {
 
   // ── BOLSAS / SACOS ───────────────────────────────────────────────────────────
   mochila_tecido: {
-    codigos: ['92163'],
+    codigos: ['mochila','92163','01444'],
     nome: 'Mochila Promocional de Tecido',
     badge: 'badge-bolsa',
     minimo: 290.00,
@@ -802,7 +1021,7 @@ const SILK = {
     ],
   },
   mochila_antifurto: {
-    codigos: [],
+    codigos: ['mochila'],
     nome: 'Mochila Anti-Furto',
     badge: 'badge-bolsa',
     minimo: 350.00,
@@ -821,8 +1040,8 @@ const SILK = {
       { ate: Infinity, preco: 1.50 },
     ],
   },
-  sacola_tnt: {
-    codigos: ['18537G'],
+  sacola_tnt_metalizada1: {
+    codigos: ['sacola-metalizada','18537G','18537P','09142','09143'],
     nome: 'Sacola de TNT Metalizada (Gravação até 200x200mm)',
     badge: 'badge-bolsa',
     minimo: 190.00,
@@ -831,8 +1050,18 @@ const SILK = {
       { ate: Infinity, preco: 1.85 },
     ],
   },
+  sacola_tnt_metalizada2: {
+    codigos: ['sacola-metalizada','18537G','18537P','09142','09143'],
+    nome: 'Sacola de TNT Metalizada (Gravação até 380x300mm)',
+    badge: 'badge-bolsa',
+    minimo: 225.00,
+    faixas: [
+      { ate: 100,      preco: 225.00 / 102 },
+      { ate: Infinity, preco: 2.25 },
+    ],
+  },
   sacola_tecido: {
-    codigos: ['13780'],
+    codigos: ['sacola','sacola-tnt','13780'],
     nome: 'Sacola de Tecido (Gravação até 150x150mm)',
     badge: 'badge-bolsa',
     minimo: 190.00,
@@ -841,9 +1070,9 @@ const SILK = {
       { ate: Infinity, preco: 1.65 },
     ],
   },
-  sacola_alca: {
+  sacola_tecido2: {
     codigos: ['13803N','18595','02081N'],
-    nome: 'Sacola de Tecido com Alça',
+    nome: 'Sacola de Tecido (Gravação até 280x300mm)',
     badge: 'badge-bolsa',
     minimo: 225.00,
     faixas: [
@@ -984,8 +1213,18 @@ const SILK = {
 
   // ── ROUPAS / TÊXTEIS ─────────────────────────────────────────────────────────
   camiseta: {
-    codigos: ['30501'],
-    nome: 'Camiseta',
+    codigos: ['Camiseta','Camisa'],
+    nome: 'Camiseta - Gravação Peito/Costas',
+    badge: 'badge-roupa',
+    minimo: 350.00,
+    faixas: [
+      { ate: 100,      preco: 350.00 / 100 },
+      { ate: Infinity, preco: 3.50 },
+    ],
+  },
+  camiseta_manga: {
+    codigos: ['Camiseta','Camisa'],
+    nome: 'Camiseta - Gravação Manga',
     badge: 'badge-roupa',
     minimo: 250.00,
     faixas: [
@@ -1063,7 +1302,7 @@ const LASER = {
 
   // ── CANETAS / ESTOJOS / CHAVEIROS ────────────────────────────────────────────
   caneta_lapiseira: {
-    codigos: ['caneta','13546B','09824'],
+    codigos: ['caneta','chaveiro-abridor','13546B','09824'],
     nome: 'Canetas / Lapiseiras / Estojos / Chaveiro Abridor',
     badge: 'badge-caneta',
     minimo: 100.00,
@@ -1562,6 +1801,7 @@ function buildIndex(tabela, nomeTabela) {
 const IDX_SILK    = buildIndex(SILK,       'silk');
 const IDX_LASER   = buildIndex(LASER,      'laser');
 const IDX_DIGITAL = buildIndex(DIGITAL_UV, 'digital');
+const IDX_SUBLI   = buildIndex(SUBLIMACAO, 'sublimacao');
 
 function buscar(codRaw) {
   const k = norm(codRaw);
@@ -1569,6 +1809,7 @@ function buscar(codRaw) {
   if (IDX_SILK[k])    resultados.push(...IDX_SILK[k]);
   if (IDX_LASER[k])   resultados.push(...IDX_LASER[k]);
   if (IDX_DIGITAL[k]) resultados.push(...IDX_DIGITAL[k]);
+  if (IDX_SUBLI[k])   resultados.push(...IDX_SUBLI[k]);
   return resultados;
 }
 
@@ -1658,10 +1899,11 @@ function calcular() {
     const isSilk    = tabela === 'silk';
     const isDigital = tabela === 'digital';
     const isLaser   = tabela === 'laser';
+    const isSubli   = tabela === 'sublimacao';
 
-    const fotolito = isSilk ? FOTOLITO_SILK : (isDigital ? FOTOLITO_DIGITAL : FOTOLITO_LASER);
-    const headerClass  = isSilk ? 'silk' : (isDigital ? 'digital' : 'laser');
-    const tabelaLabel  = isSilk ? 'Silk / Tampografia' : (isDigital ? 'Digital UV' : 'Laser');
+    const fotolito = isSilk ? FOTOLITO_SILK : (isDigital ? FOTOLITO_DIGITAL : (isSubli ? FOTOLITO_SUBLI : FOTOLITO_LASER));
+    const headerClass  = isSilk ? 'silk' : (isDigital ? 'digital' : (isSubli ? 'sublimacao' : 'laser'));
+    const tabelaLabel  = isSilk ? 'Silk / Tampografia' : (isDigital ? 'Digital UV' : (isSubli ? 'Sublimação' : 'Laser'));
 
     const faixaInfo  = getFaixa(dados.faixas, qty);
     const totalBruto = faixaInfo.preco * qty;
