@@ -10,8 +10,8 @@
 <style>
 /* ─── TOKENS ──────────────────────────────────────────────── */
 :root {
-  --azul:#1B2A6B; --azul-mid:#243380; --azul-light:#E3EAF8;
-  --laranja:#F5A623; --laranja-dk:#D4881A; --laranja-lt:#FEF3DC;
+  --azul:#7a1294; --azul-mid:#672079; --azul-light:#E3EAF8;
+  --laranja:#b6b1b1; --laranja-dk:#585e64; --laranja-lt:#FEF3DC;
   --verde:#1A5E38; --verde-lt:#E6F4ED;
   --roxo:#5B21B6; --roxo-lt:#EDE9FE;
   --laranja2:#C0440A; --laranja2-lt:#FDEEE7;
@@ -342,17 +342,17 @@ const DIGITAL_UV = {
   // ── CANETAS / LÁPIS ─────────────────────────────────────────────────────────
   caneta_metal_simples: {
     codigos: ['caneta'],
-    nome: 'Caneta de Metal Simples / Caneta com Gravação no Clip',
+    nome: 'Caneta de Metal Simples',
     badge: 'badge-digital',
-    minimo: 110.00,
+    minimo: 170.00,
     faixas: [
-      { ate: 143,      preco: 110.00 / 143 },
+      { ate: 226,      preco: 170.00 / 226 },
       { ate: Infinity, preco: 0.75 },
     ],
   },
   caneta_plastica_eco: {
     codigos: ['caneta','caneta-plastica','13690','18520'],
-    nome: 'Caneta Plástica & Ecológica / Lápis Simples',
+    nome: 'Caneta Plástica & Ecológica / Lápis Simples (SEM SUPORTE)',
     badge: 'badge-digital',
     minimo: 130.00,
     faixas: [
@@ -374,10 +374,20 @@ const DIGITAL_UV = {
     codigos: ['caneta'],
     nome: 'Caneta com Gravação no Clip',
     badge: 'badge-digital',
-    minimo: 110.00,
+    minimo: 130.00,
     faixas: [
-      { ate: 200,      preco: 110.00 / 200 },
+      { ate: 236,      preco: 130.00 / 236 },
       { ate: Infinity, preco: 0.55 },
+    ],
+  },
+  caneta_PP: {
+    codigos: ['caneta','05031'],
+    nome: 'Caneta PP com Acabamento Brilhante',
+    badge: 'badge-digital',
+    minimo: 130.00,
+    faixas: [
+      { ate: 224,      preco: 130.00 / 224 },
+      { ate: Infinity, preco: 0.58 },
     ],
   },
   // ── CHAVEIRO ABRIDOR ──────────────────────────────────────────────────────────
@@ -631,7 +641,7 @@ const SILK = {
 
   // ── GARRAFAS / SQUEEZES ─────────────────────────────────────────────────────
   garrafas_gr1: {
-    codigos: ['13764B','14817','17012'],
+    codigos: ['garrafa','13764B','14817','17012','14873'],
     nome: 'Squeezes/Garrafas Grupo 01',
     badge: 'badge-garrafa',
     minimo: 160.00,
@@ -641,7 +651,7 @@ const SILK = {
     ],
   },
   garrafas_gr2: {
-    codigos: ['Ga6025','12487B','9139AS','94059'],
+    codigos: ['garrafa','Ga6025','12487B','9139AS','94059'],
     nome: 'Squeezes/Garrafas Grupo 02',
     badge: 'badge-garrafa',
     minimo: 165.00,
@@ -651,7 +661,7 @@ const SILK = {
     ],
   },
   garrafas_gr3: {
-    codigos: ['17010B','02112','18715','01115B','14794','94256'],
+    codigos: ['garrafa','17010B','02112','18715','01115B','14794','94256'],
     nome: 'Squeezes/Garrafas Grupo 03',
     badge: 'badge-garrafa',
     minimo: 195.00,
@@ -661,7 +671,7 @@ const SILK = {
     ],
   },
   garrafas_gr4: {
-    codigos: ['14784','14179','18704','Ga9050','94078'],
+    codigos: ['garrafa','14784','14179','18704','Ga9050','94078'],
     nome: 'Squeezes/Garrafas Grupo 04',
     badge: 'badge-garrafa',
     minimo: 250.00,
@@ -671,7 +681,7 @@ const SILK = {
     ],
   },
   garrafas_vidro: {
-    codigos: ['08765B'],
+    codigos: ['garrafa','08765B'],
     nome: 'Garrafa e Copos de Vidro Jateado',
     badge: 'badge-garrafa',
     minimo: 190.00,
@@ -723,7 +733,7 @@ const SILK = {
     ],
   },
   copos_gr2: {
-    codigos: ['03590'],
+    codigos: ['03590','07392'],
     nome: 'Canecas e Copos Grupo 02',
     badge: 'badge-copo',
     minimo: 165.00,
@@ -733,7 +743,7 @@ const SILK = {
     ],
   },
   copos_gr3: {
-    codigos: ['03889','18623','14726L','12508','07392','18624'],
+    codigos: ['03889','18623','14726L','12508','18624'],
     nome: 'Canecas e Copos Grupo 03',
     badge: 'badge-copo',
     minimo: 190.00,
@@ -1011,7 +1021,7 @@ const SILK = {
 
   // ── BOLSAS / SACOS ───────────────────────────────────────────────────────────
   mochila_tecido: {
-    codigos: ['mochila','92163','01444'],
+    codigos: ['mochila','04508','92163','01444'],
     nome: 'Mochila Promocional de Tecido',
     badge: 'badge-bolsa',
     minimo: 290.00,
@@ -1141,7 +1151,7 @@ const SILK = {
     ],
   },
   necessaire_gr1: {
-    codigos: ['18516','02092','13450','18534','14612','18533'],
+    codigos: ['necessaire','18516','02092','13450','18534','14612','18533'],
     nome: 'Necessaire Grupo 01',
     badge: 'badge-bolsa',
     minimo: 160.00,
@@ -1151,7 +1161,7 @@ const SILK = {
     ],
   },
   necessaire_gr2: {
-    codigos: ['01228P','18650','18501','14414'],
+    codigos: ['necessaire','15333','01228P','18650','18501','14414'],
     nome: 'Necessaire Grupo 02',
     badge: 'badge-bolsa',
     minimo: 190.00,
@@ -1161,7 +1171,7 @@ const SILK = {
     ],
   },
   necessaire_gr3: {
-    codigos: ['18507','14572','14937','14430','18506'],
+    codigos: ['necessaire','18507','14572','14937','14430','18506'],
     nome: 'Necessaire Grupo 03',
     badge: 'badge-bolsa',
     minimo: 225.00,
@@ -1361,6 +1371,17 @@ const LASER = {
       { ate: Infinity, preco: 0.65 },
     ],
   },
+  // ── OUTRO ──────────────────────────────────────────────────────
+  kit_masculino: {
+    codigos: ['kit-masculino','10124'],
+    nome: 'Kit Masculino',
+    badge: 'badge-eletronico',
+    minimo: 150.00,
+    faixas: [
+      { ate: 50,      preco: 150.00 / 50 },
+      { ate: Infinity, preco: 3 },
+    ],
+  },
 
   // ── GARRAFAS / SQUEEZES ──────────────────────────────────────────────────────
   garrafa_laser_gr1_pequena: {
@@ -1433,10 +1454,22 @@ const LASER = {
     badge: 'badge-laser',
     minimo: 100.00,
     faixas: [
-      { ate: 119,      preco: 100.00 / 119 },
-      { ate: 500,      preco: 0.84 },
-      { ate: 1000,     preco: 0.78 },
-      { ate: Infinity, preco: 0.73 },
+      { ate: 100,      preco: 100.00 / 100 },
+      { ate: 500,      preco: 1.00 },
+      { ate: 1000,     preco: .9 },
+      { ate: Infinity, preco: 0.85 },
+    ],
+  },
+  caneca_inox_pequena2: {
+    codigos: ['07392'],
+    nome: 'Caneca Inox – Gravação 26x50mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 83,      preco: 100.00 / 83 },
+      { ate: 500,      preco: 1.20 },
+      { ate: 1000,     preco: 1.10 },
+      { ate: Infinity, preco: 1.05 },
     ],
   },
   caneca_inox_grande: {
@@ -1464,7 +1497,7 @@ const LASER = {
     ],
   },
   copo_stanley_laser_pequeno: {
-    codigos: ['18645L','12458'],
+    codigos: ['18645L'],
     nome: 'Copo Réplica Stanley – Gravação 26x60mm',
     badge: 'badge-laser',
     minimo: 100.00,
@@ -1473,6 +1506,18 @@ const LASER = {
       { ate: 500,      preco: 2.00 },
       { ate: 1000,     preco: 1.90 },
       { ate: Infinity, preco: 1.80 },
+    ],
+  },
+  copo_stanley_laser_medio: {
+    codigos: ['18645L'],
+    nome: 'Copo Réplica Stanley – Gravação 35x50mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 47,       preco: 100.00 / 47 },
+      { ate: 500,      preco: 2.10 },
+      { ate: 1000,     preco: 2.00 },
+      { ate: Infinity, preco: 1.90 },
     ],
   },
   caneca_termica_premium_pequena: {
