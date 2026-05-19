@@ -1,0 +1,2062 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Calculadora de Gravação · XBZ Brindes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ─── TOKENS ──────────────────────────────────────────────── */
+:root {
+  --azul:#E24E8A; --azul-mid:#c54779; --azul-light:#E3EAF8;
+  --laranja:#dbdada; --laranja-dk:#f2d8fa; --laranja-lt:#FEF3DC;
+  --verde:#1A5E38; --verde-lt:#E6F4ED;
+  --roxo:#5B21B6; --roxo-lt:#EDE9FE;
+  --laranja2:#C0440A; --laranja2-lt:#FDEEE7;
+  --cinza-bg:#F0F2F7; --cinza-bd:#DCDCDC; --cinza-tx:#555;
+  --vermelho:#b71c1c; --vermelho-lt:#FFEBEE;
+  --branco:#fff;
+}
+/* ─── RESET ───────────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+body{display:flex;justify-content:center;padding:2rem 1rem 4rem;min-height:100vh;background:var(--cinza-bg);font-family:'Sora',sans-serif}
+.wrap{width:100%;max-width:520px}
+
+/* ─── HEADER ──────────────────────────────────────────────── */
+.header{background:var(--azul);border-radius:12px 12px 0 0;padding:1.4rem 1.5rem 1.2rem;position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(245,166,35,.12)}
+.header h1{font-size:18px;font-weight:600;color:#fff;margin-bottom:3px;display:flex;align-items:center;gap:8px;position:relative}
+.header p{font-size:12px;color:var(--laranja);position:relative}
+
+/* ─── BODY ────────────────────────────────────────────────── */
+.body-wrap{background:#fff;border-radius:0 0 12px 12px;padding:1.2rem;margin-bottom:1rem;border:1px solid var(--cinza-bd);border-top:none}
+
+/* ─── CARD ────────────────────────────────────────────────── */
+.card{background:var(--cinza-bg);border:1px solid var(--cinza-bd);border-radius:10px;padding:1.1rem;margin-bottom:.9rem}
+.card-title{font-size:10px;font-weight:600;color:var(--azul);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.8rem;display:flex;align-items:center;gap:6px}
+
+/* ─── FIELDS ──────────────────────────────────────────────── */
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:12px;color:var(--cinza-tx);font-weight:500}
+.field input{width:100%;padding:9px 10px;font-size:14px;border:1px solid var(--cinza-bd);border-radius:7px;background:#fff;color:#222;font-family:'Sora',sans-serif;transition:border-color .15s,box-shadow .15s}
+.field input:focus{outline:none;border-color:var(--laranja);box-shadow:0 0 0 3px rgba(245,166,35,.15)}
+.field input::placeholder{color:#bbb}
+.tag-info{display:flex;align-items:flex-start;gap:6px;font-size:11px;color:var(--cinza-tx);margin-top:6px;line-height:1.4}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--laranja);flex-shrink:0;margin-top:3px}
+
+/* ─── QTY BUTTONS ─────────────────────────────────────────── */
+.qty-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:8px}
+.qty-btn{padding:7px 0;font-size:12px;font-weight:500;background:#fff;border:1px solid var(--cinza-bd);border-radius:7px;color:var(--cinza-tx);cursor:pointer;transition:all .15s;font-family:'Sora',sans-serif}
+.qty-btn:hover{background:var(--laranja-lt);color:var(--laranja-dk);border-color:var(--laranja)}
+.qty-btn.active{background:var(--laranja);color:#fff;border-color:var(--laranja-dk);font-weight:600}
+
+/* ─── CALC BUTTON ─────────────────────────────────────────── */
+.calc-btn{width:100%;padding:12px;font-size:15px;font-weight:600;background:var(--azul);color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:'Sora',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s,transform .1s}
+.calc-btn:hover{background:var(--azul-mid)}
+.calc-btn:active{transform:scale(.99)}
+.divider{height:1px;background:var(--cinza-bd);margin:1.1rem 0}
+
+/* ─── ERROR / EMPTY ───────────────────────────────────────── */
+.error-msg{font-size:13px;color:var(--vermelho);background:var(--vermelho-lt);border-left:3px solid var(--vermelho);border-radius:0 7px 7px 0;padding:10px 12px;margin-top:.75rem;display:none}
+.empty-state{text-align:center;padding:1.5rem;color:#bbb;font-size:13px}
+
+/* ─── RESULT SECTION ──────────────────────────────────────── */
+.result-section{display:none}
+.result-section.visible{display:block}
+.result-stack{display:flex;flex-direction:column;gap:1rem}
+
+/* ─── RESULT BLOCK (one per modality) ────────────────────── */
+.result-block{}
+.result-header{border-radius:10px 10px 0 0;padding:.7rem 1.1rem;display:flex;align-items:center;gap:8px}
+.result-header.silk{background:var(--azul)}
+.result-header.laser{background:var(--verde)}
+.result-header span{font-size:11px;font-weight:600;color:var(--laranja);text-transform:uppercase;letter-spacing:.08em}
+.result-header .sub{font-size:10px;color:rgba(255,255,255,.7);margin-left:auto}
+.result-body{background:#fff;border:1px solid var(--cinza-bd);border-top:none;border-radius:0 0 10px 10px;overflow:hidden;margin-bottom:0}
+.result-row{display:flex;align-items:baseline;justify-content:space-between;padding:8px 1.1rem;border-bottom:1px solid var(--cinza-bd)}
+.result-row:last-child{border-bottom:none}
+.result-row.total-row.silk{background:var(--azul)}
+.result-row.total-row.laser{background:var(--verde)}
+.result-label{font-size:12px;color:var(--cinza-tx)}
+.result-row.total-row .result-label{color:rgba(255,255,255,.8);font-weight:500}
+.result-val{font-size:13px;font-weight:500;color:#222;font-family:'DM Mono',monospace}
+.result-val.destaque{font-size:17px;color:var(--laranja-dk);font-weight:700}
+.result-row.total-row .result-val{color:var(--laranja);font-size:17px;font-weight:700}
+
+/* Badge categoria */
+.badge-cat{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600}
+.badge-garrafa{background:var(--azul-light);color:var(--azul)}
+.badge-copo{background:var(--laranja-lt);color:var(--laranja-dk)}
+.badge-caderno{background:#E8F5E9;color:#2E7D32}
+.badge-caneta{background:#F3E5F5;color:#6A1B9A}
+.badge-silicone{background:#E0F7FA;color:#00695C}
+.badge-eletronico{background:#E8EAF6;color:#283593}
+.badge-bolsa{background:#FFF3E0;color:#E65100}
+.badge-roupa{background:#FCE4EC;color:#880E4F}
+.badge-laser{background:var(--verde-lt);color:var(--verde)}
+.badge-outro{background:#F5F5F5;color:#424242}
+
+/* Digital UV header */
+.result-header.digital{background:var(--roxo)}
+.result-row.total-row.digital{background:var(--roxo)}
+.badge-digital{background:var(--roxo-lt);color:var(--roxo)}
+
+/* Sublimação header */
+.result-header.sublimacao{background:var(--laranja2)}
+.result-row.total-row.sublimacao{background:var(--laranja2)}
+.badge-sublimacao{background:var(--laranja2-lt);color:var(--laranja2)}
+
+/* Avisos */
+.aviso-box{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;font-size:11px;line-height:1.5;border-left:3px solid;border-radius:0 0 10px 10px}
+.aviso-minimo{background:var(--laranja-lt);border-color:var(--laranja);color:#7A4A00}
+.aviso-info{background:var(--azul-light);border-color:var(--azul);color:var(--azul)}
+
+/* Info fotolito */
+.fotolito-nota{display:flex;align-items:flex-start;gap:8px;background:var(--azul-light);border-left:3px solid var(--azul);border-radius:0 7px 7px 0;padding:10px 12px;margin-bottom:.75rem}
+.fotolito-nota p{font-size:11px;color:var(--azul);line-height:1.5}
+
+/* XBZ link button */
+.xbz-link{display:none;align-items:center;gap:6px;font-size:12px;color:var(--azul);text-decoration:none;margin-top:8px;font-weight:500;padding:6px 10px;background:var(--azul-light);border-radius:7px;width:fit-content;transition:background .15s}
+.xbz-link:hover{background:#cdd9f0;color:var(--azul-mid)}
+.xbz-link.visible{display:flex}
+
+/* ─── INFO PANEL ──────────────────────────────────────────── */
+.info-panel{border-radius:10px;overflow:hidden;border:1px solid var(--cinza-bd)}
+.info-panel-header{background:var(--azul);padding:.75rem 1.1rem;display:flex;align-items:center;gap:8px}
+.info-panel-header span{font-size:11px;font-weight:600;color:var(--laranja);text-transform:uppercase;letter-spacing:.08em}
+.info-grid{display:grid;grid-template-columns:1fr 1fr}
+.info-box{background:#fff;padding:.9rem 1.1rem;border-bottom:1px solid var(--cinza-bd)}
+.info-box:nth-child(odd){border-right:1px solid var(--cinza-bd)}
+.info-box-title{font-size:10px;font-weight:700;color:var(--azul);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.info-box-price{font-size:14px;font-weight:700;color:var(--azul);margin-bottom:3px;font-family:'DM Mono',monospace}
+.info-box p{font-size:11px;color:var(--cinza-tx);line-height:1.5}
+.info-box p strong{color:#222}
+.info-aviso{background:#FFF8EC;border-left:3px solid var(--laranja);padding:9px 1.1rem;display:flex;gap:8px;align-items:flex-start}
+.info-aviso p{font-size:11px;color:#7A4A00;line-height:1.5}
+.info-lista{background:var(--azul);padding:.8rem 1.1rem;display:grid;grid-template-columns:1fr 1fr;gap:5px 10px}
+.info-lista-item{font-size:10px;color:rgba(255,255,255,.85);display:flex;align-items:flex-start;gap:5px;line-height:1.4}
+.info-lista-item::before{content:'•';color:var(--laranja);font-size:14px;line-height:1;flex-shrink:0;margin-top:1px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--laranja)" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      Calculadora de Gravação
+    </h1>
+    <p>Silk · Tampografia · Laser · Digital UV · Sublimação — XBZ Brindes</p>
+  </div>
+
+  <div class="body-wrap">
+
+    <!-- PRODUTO -->
+    <div class="card">
+      <div class="card-title">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--laranja)" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M17 14h3M14 17v3"/></svg>
+        Produto
+      </div>
+      <div class="field">
+        <label for="cod">Código do produto</label>
+        <input type="text" id="cod" placeholder="Ex: 07392, 14846, 18645L…" autocomplete="off"/>
+        <div class="tag-info">
+          <span class="dot"></span>
+          Se o produto tiver gravação em Silk, Laser e/ou Digital UV, todos os valores aparecem
+        </div>
+        <a id="xbz-link" class="xbz-link" href="#" target="_blank" rel="noopener">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Ver produto na XBZ Brindes
+        </a>
+      </div>
+    </div>
+
+    <!-- QUANTIDADE -->
+    <div class="card">
+      <div class="card-title">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--laranja)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        Quantidade
+      </div>
+      <div class="field">
+        <label for="qty-input">Número de peças</label>
+        <input type="number" id="qty-input" placeholder="Digite ou use os atalhos abaixo" min="1"/>
+      </div>
+      <div class="qty-grid">
+        <button class="qty-btn" onclick="setQty(50,this)">50 un</button>
+        <button class="qty-btn" onclick="setQty(100,this)">100 un</button>
+        <button class="qty-btn" onclick="setQty(200,this)">200 un</button>
+        <button class="qty-btn" onclick="setQty(500,this)">500 un</button>
+        <button class="qty-btn" onclick="setQty(1000,this)">1.000 un</button>
+        <button class="qty-btn" id="btn-custom" onclick="setQty(null,this)">Outro</button>
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="calcular()">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Calcular valor de gravação
+    </button>
+    <div class="error-msg" id="error-msg"></div>
+    <div class="divider"></div>
+
+    <!-- RESULTADO -->
+    <div class="result-section" id="result-section">
+      <div class="result-stack" id="result-stack"></div>
+    </div>
+    <div class="empty-state" id="empty-state">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" style="display:block;margin:0 auto 8px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Preencha o código e a quantidade para ver o resultado
+    </div>
+  </div>
+
+  <!-- INFO PANEL -->
+  <div class="info-panel">
+    <div class="info-panel-header">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--laranja)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>Informações gerais</span>
+    </div>
+    <div class="info-aviso">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--laranja)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <p><strong>Preço por cor de gravação e por batida.</strong> O custo é por pedido, não por peça.</p>
+    </div>
+    <div class="info-grid" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="info-box">
+        <div class="info-box-title">Silk / Tampografia</div>
+        <div class="info-box-price">Fotolito R$ 35,00</div>
+        <p>Por pedido, independente da quantidade de cores. Tampografia: clichê R$ 70,00 + R$ 25,00/cor extra.</p>
+      </div>
+      <div class="info-box">
+        <div class="info-box-title">Laser (todas)</div>
+        <div class="info-box-price">Sem fotolito</div>
+        <p>Sem custo de fotolito ou clichê. Faturamento mínimo de <strong>R$ 100,00</strong> por pedido (R$ 150,00 em alguns itens).</p>
+      </div>
+      <div class="info-box" style="border-right:none">
+        <div class="info-box-title">Digital UV</div>
+        <div class="info-box-price">Sem fotolito</div>
+        <p>Impressão colorida direta. Mínimo de <strong>R$ 110,00</strong> ou <strong>R$ 123,00</strong> conforme o item. Preço por lado.</p>
+      </div>
+    </div>
+    <div class="info-grid" style="grid-template-columns:1fr">
+      <div class="info-box" style="border-right:none">
+        <div class="info-box-title" style="color:var(--laranja2)">Sublimação</div>
+        <div class="info-box-price" style="color:var(--laranja2)">Sem fotolito</div>
+        <p>Impressão colorida full color. Mínimo <strong>R$ 150,00</strong> (Gr.01/02) ou <strong>R$ 300,00</strong> (Gr.03 – dados variáveis). Enviar 15% a mais de peças para reposição.</p>
+      </div>
+    <div class="info-aviso" style="background:var(--azul-light);border-color:var(--azul)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--azul)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <p style="color:var(--azul)">Nomes diversos: + R$ 1,50 por nome. Para artes complexas, consulte o time de vendas.</p>
+    </div>
+    <div class="info-lista">
+      <div class="info-lista-item">Tabela para atacadistas de brindes</div>
+      <div class="info-lista-item">Retirada gratuita em SP (região central)</div>
+      <div class="info-lista-item">Valores para peças promocionais sem marca</div>
+      <div class="info-lista-item">Amostra física disponível sob consulta</div>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════════
+//  TABELAS DE DADOS
+//
+//  Estrutura de cada tipo:
+//  {
+//    codigos : string[]           — lista de códigos pertencentes a este grupo
+//    nome    : string             — nome exibido no resultado
+//    badge   : string             — classe CSS do badge de categoria
+//    minimo  : number             — faturamento mínimo do grupo
+//    faixas  : [{ate, preco}]     — faixas de preço (ate=Infinity para a última)
+//    fotolito: number (opcional)  — sobrescreve o padrão da tabela (ex: laser não tem)
+//  }
+//
+//  Como adicionar um código em duas tabelas:
+//  Basta incluí-lo em SILK e também em LASER — a calculadora detecta e exibe ambos.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ─── CONSTANTES ───────────────────────────────────────────────────────────────
+const FOTOLITO_SILK    = 35.00;
+const FOTOLITO_LASER   =  0.00;  // laser não tem fotolito
+const FOTOLITO_DIGITAL =  0.00;  // digital UV também não tem fotolito
+const FOTOLITO_SUBLI   =  0.00;  // sublimação também não tem fotolito
+
+
+// ─── TABELA SUBLIMAÇÃO ────────────────────────────────────────────────────────
+// Sem fotolito/clichê. Mínimo R$ 150,00 (Gr01/02) ou R$ 300,00 (Gr03).
+
+const SUBLIMACAO = {
+
+  squeeze_caneca_gr1: {
+    codigos: ['squeeze-subli','caneca-subli'],
+    nome: 'Squeeze e Canecas Gr.01 – 1 ou 2 Lados',
+    badge: 'badge-sublimacao',
+    minimo: 150.00,
+    faixas: [
+      { ate: 40,       preco: 150.00 / 40 },
+      { ate: Infinity, preco: 3.75 },
+    ],
+  },
+  squeeze_caneca_gr2: {
+    codigos: ['squeeze-subli360','caneca-subli360'],
+    nome: 'Squeeze e Canecas Gr.02 – Gravação 360°',
+    badge: 'badge-sublimacao',
+    minimo: 150.00,
+    faixas: [
+      { ate: 32,       preco: 150.00 / 32 },
+      { ate: Infinity, preco: 4.60 },
+    ],
+  },
+  squeeze_caneca_gr3: {
+    codigos: ['squeeze-subli-var','caneca-subli-var'],
+    nome: 'Squeeze e Canecas Gr.03 – Dados Variáveis',
+    badge: 'badge-sublimacao',
+    minimo: 300.00,
+    faixas: [
+      { ate: 38,       preco: 300.00 / 38 },
+      { ate: Infinity, preco: 7.80 },
+    ],
+  },
+  mousepad: {
+    codigos: ['mousepad'],
+    nome: 'Mousepads Sublimáticos (BRANCOS)',
+    badge: 'badge-sublimacao',
+    minimo: 250.00,
+    faixas: [
+      { ate: 89,       preco: 250.00 / 89 },
+      { ate: 500,       preco: 2.80 },
+      { ate: 2000,       preco: 2.50 },
+      { ate: Infinity, preco: 2.25 },
+    ],
+  },
+};
+
+
+// ─── TABELA DIGITAL UV ────────────────────────────────────────────────────────
+// Preço por LADO de impressão. Sem fotolito/clichê.
+// Mesma estrutura das outras tabelas.
+
+const DIGITAL_UV = {
+
+  // ── CANETAS / LÁPIS ─────────────────────────────────────────────────────────
+  caneta_metal_simples: {
+    codigos: ['caneta'],
+    nome: 'Caneta de Metal Simples',
+    badge: 'badge-digital',
+    minimo: 170.00,
+    faixas: [
+      { ate: 226,      preco: 170.00 / 226 },
+      { ate: Infinity, preco: 0.75 },
+    ],
+  },
+  caneta_plastica_eco: {
+    codigos: ['caneta','lapis','caneta-plastica','13690','18520'],
+    nome: 'Caneta Plástica & Ecológica / Lápis Simples (SEM SUPORTE)',
+    badge: 'badge-digital',
+    minimo: 130.00,
+    faixas: [
+      { ate: 448,      preco: 130.00 / 448 },
+      { ate: Infinity, preco: 0.29 },
+    ],
+  },
+  caneta_plastica_suporte: {
+    codigos: ['caneta','13499'],
+    nome: 'Caneta Plástica com Suporte',
+    badge: 'badge-digital',
+    minimo: 130.00,
+    faixas: [
+      { ate: 288,      preco: 130.00 / 288 },
+      { ate: Infinity, preco: 0.45 },
+    ],
+  },
+  caneta_clip: {
+    codigos: ['caneta'],
+    nome: 'Caneta com Gravação no Clip',
+    badge: 'badge-digital',
+    minimo: 130.00,
+    faixas: [
+      { ate: 236,      preco: 130.00 / 236 },
+      { ate: Infinity, preco: 0.55 },
+    ],
+  },
+  caneta_PP: {
+    codigos: ['caneta','05031'],
+    nome: 'Caneta PP com Acabamento Brilhante',
+    badge: 'badge-digital',
+    minimo: 130.00,
+    faixas: [
+      { ate: 224,      preco: 130.00 / 224 },
+      { ate: Infinity, preco: 0.58 },
+    ],
+  },
+  // ── CHAVEIRO ABRIDOR ──────────────────────────────────────────────────────────
+  chaveiro_abridor: {
+    codigos: ['chaveiro-abridor','09824'],
+    nome: 'Chaveiro Abridor - Metal',
+    badge: 'badge-digital',
+    minimo: 170.00,
+    faixas: [
+      { ate: 141,      preco: 170.00 / 141 },
+      { ate: Infinity, preco: 1.20 },
+    ],
+  },
+  // ── MOLESKINE - CADERNO ──────────────────────────────────────────────────────────
+
+  //moleskine branco pequeno
+  moleskine_pequeno_branco_40x40: {
+    codigos: ['moleskine','caderno','14091'],
+    nome: 'Moleskine/Caderno Branco Pequeno-90x140mm Gravação até 40x40mm',
+    badge: 'badge-digital',
+    minimo: 123.00,
+    faixas: [
+      { ate: 77,      preco: 123.00 / 77 },
+      { ate: Infinity, preco: 1.60 },
+    ],
+  },
+  moleskine_pequeno_branco_70x85: {
+    codigos: ['moleskine','caderno','14091'],
+    nome: 'Moleskine/Caderno Branco Pequeno-90x140mm Gravação até 70x85mm',
+    badge: 'badge-digital',
+    minimo: 123.00,
+    faixas: [
+      { ate: 49,      preco: 123.00 / 49 },
+      { ate: Infinity, preco: 2.50 },
+    ],
+  },
+  moleskine_pequeno_branco_total: {
+    codigos: ['moleskine','caderno','14091'],
+    nome: 'Moleskine/Caderno Branco Pequeno 90x140mm Gravação Total (Verificar Valor de Manuseio)',
+    badge: 'badge-digital',
+    minimo: 123.00,
+    faixas: [
+      { ate: 32,      preco: 123.00 / 32 },
+      { ate: Infinity, preco: 3.75 },
+    ],
+  },
+
+  //moleskine colorido pequeno
+  moleskine_pequeno_colorido_40x40: {
+    codigos: ['moleskine','caderno','14091'],
+    nome: 'Moleskine/Caderno Colorido Pequeno-90x140mm Gravação até 40x40mm',
+    badge: 'badge-digital',
+    minimo: 123.00,
+    faixas: [
+      { ate: 51,      preco: 123.00 / 51 },
+      { ate: Infinity, preco: 2.40 },
+    ],
+  },
+  moleskine_pequeno_colorido_70x85: {
+    codigos: ['moleskine','caderno','14091'],
+    nome: 'Moleskine/Caderno Colorido Pequeno-90x140mm Gravação até 70x85mm',
+    badge: 'badge-digital',
+    minimo: 123.00,
+    faixas: [
+      { ate: 21,      preco: 123.00 / 21 },
+      { ate: Infinity, preco: 5.70 },
+    ],
+  },
+  moleskine_pequeno_colorido_total: {
+    codigos: ['moleskine','caderno','14091'],
+    nome: 'Moleskine/Caderno Colorido Pequeno 90x140mm Gravação Total (Verificar Valor de Manuseio)',
+    badge: 'badge-digital',
+    minimo: 123.00,
+    faixas: [
+      { ate: 32,      preco: 123.00 / 32 },
+      { ate: Infinity, preco: 3.75 },
+    ],
+  },
+
+  //moleskine médio branco
+  moleskine_medio_branco_60x35: {
+    codigos: ['moleskine','caderno','12514'],
+    nome: 'Moleskine/Caderno Branco Médio-130x180mm Gravação até 60x35mm',
+    badge: 'badge-digital',
+    minimo: 123.00,
+    faixas: [
+      { ate: 44,      preco: 123.00 / 44 },
+      { ate: Infinity, preco: 2.75 },
+    ],
+  },
+  moleskine_medio_branco_70x90: {
+    codigos: ['moleskine','caderno','12514'],
+    nome: 'Moleskine/Caderno Branco Médio-130x180mm Gravação até 70x90mm',
+    badge: 'badge-digital',
+    minimo: 123.00,
+    faixas: [
+      { ate: 34,      preco: 123.00 / 34 },
+      { ate: Infinity, preco: 3.60 },
+    ],
+  },
+  moleskine_medio_branco_total: {
+    codigos: ['moleskine','caderno','12514'],
+    nome: 'Moleskine/Caderno Branco Médio-130x180mm Gravação Total (Verificar Valor de Manuseio)',
+    badge: 'badge-digital',
+    minimo: 150.00,
+    faixas: [
+      { ate: 21,      preco: 150.00 / 21 },
+      { ate: Infinity, preco: 7 },
+    ],
+  },
+
+  //moleskine médio colorido
+
+
+  // ── FONES DE OUVIDO ──────────────────────────────────────────────────────────
+  fone_pequeno_12789: {
+    codigos: ['12789'],
+    nome: 'Fone Pequeno Digital UV – Grav. até 52x52mm',
+    badge: 'badge-digital',
+    minimo: 130.00,
+    faixas: [
+      { ate: 86,       preco: 130.00 / 86 },
+      { ate: Infinity, preco: 1.50 },
+    ],
+  },
+  fone_pequeno_06064: {
+    codigos: ['06064'],
+    nome: 'Fone Pequeno Digital UV – Grav. até 33x33mm',
+    badge: 'badge-digital',
+    minimo: 180.00,
+    faixas: [
+      { ate: 60,       preco: 180.00 / 60 },
+      { ate: Infinity, preco: 3.00 },
+    ],
+  },
+  fone_pequeno_1419618596: {
+    codigos: ['14199','18596'],
+    nome: 'Fone Pequeno Digital UV – Grav. até 30x30mm',
+    badge: 'badge-digital',
+    minimo: 150.00,
+    faixas: [
+      { ate: 66,       preco: 150.00 / 66 },
+      { ate: Infinity, preco: 2.25 },
+    ],
+  },
+  // ── CABO DE 3 PONTAS ─────────────────────────────────────────────────────────
+  cabo: {
+    codigos: ['cabo','10338'],
+    nome: 'Cabo USB Retrátil 3 em 1 Digital UV – Grav. até 38x38mm',
+    badge: 'badge-digital',
+    minimo: 150.00,
+    faixas: [
+      { ate: 100,       preco: 150.00 / 100 },
+      { ate: Infinity, preco: 1.5 },
+    ],
+  },
+
+  // ── PORTA JÓIAS ─────────────────────────────────────────────────────────
+  porta_joia: {
+    codigos: ['porta-joia','01622B','01622'],
+    nome: 'Porta-Jóia Couro Sintético Digital UV – Grav. até 30x30mm',
+    badge: 'badge-digital',
+    minimo: 100.00,
+    faixas: [
+      { ate: 33,       preco: 100.00 / 33 },
+      { ate: 500,       preco: 3 },
+      { ate: 1000,       preco: 2.5 },
+      { ate: Infinity, preco: 2 },
+    ],
+  },
+
+  // ── CAIXINHAS DE SOM ─────────────────────────────────────────────────────────
+  caixinha_som_12926: {
+    codigos: ['12926'],
+    nome: 'Caixinha de Som Pequena Digital UV – Grav. até 30x15mm',
+    badge: 'badge-digital',
+    minimo: 150.00,
+    faixas: [
+      { ate: 100,      preco: 150.00 / 100 },
+      { ate: Infinity, preco: 1.50 },
+    ],
+  },
+  caixinha_som_1390504361: {
+    codigos: ['13905','04361'],
+    nome: 'Caixinha de Som Pequena Digital UV – Grav. até 30x50mm',
+    badge: 'badge-digital',
+    minimo: 200.00,
+    faixas: [
+      { ate: 66,       preco: 200.00 / 66 },
+      { ate: Infinity, preco: 3.00 },
+    ],
+  },
+  caixinha_som_02017: {
+    codigos: ['02017'],
+    nome: 'Caixinha de Som Grande Digital UV – Grav. até 30x90mm',
+    badge: 'badge-digital',
+    minimo: 300.00,
+    faixas: [
+      { ate: 46,       preco: 300.00 / 46 },
+      { ate: Infinity, preco: 6.50 },
+    ],
+  },
+  caixinha_som_tecido: {
+    codigos: ['caixa-de-som','08003'],
+    nome: 'Caixinha de Som Tecido Digital UV',
+    badge: 'badge-digital',
+    minimo: 300.00,
+    faixas: [
+      { ate: 42,       preco: 300.00 / 42 },
+      { ate: Infinity, preco: 7 },
+    ],
+  },
+
+  // ── WEBCAM COVER / PROTETOR DE CÂMERA ────────────────────────────────────────
+  webcam_cover_pequeno: {
+    codigos: ['97952','97951','14200','1422P'],
+    nome: 'Webcam Cover / Protetor de Câmera – Grav. até 25x10mm',
+    badge: 'badge-digital',
+    minimo: 123.00,
+    faixas: [
+      { ate: 106,      preco: 123.00 / 106 },
+      { ate: Infinity, preco: 1.15 },
+    ],
+  },
+  webcam_cover_grande: {
+    codigos: ['13888'],
+    nome: 'Protetor de Câmera – Grav. até 38x38mm',
+    badge: 'badge-digital',
+    minimo: 123.00,
+    faixas: [
+      { ate: 205,      preco: 123.00 / 205 },
+      { ate: Infinity, preco: 0.60 },
+    ],
+  },
+
+  // ── ADAPTADORES / CARREGADORES ───────────────────────────────────────────────
+  adaptador_carregador: {
+    codigos: ['12628','13240'],
+    nome: 'Adaptador de Tomada / Carregador – Digital UV',
+    badge: 'badge-digital',
+    minimo: 123.00,
+    faixas: [
+      { ate: 144,      preco: 123.00 / 144 },
+      { ate: Infinity, preco: 0.85 },
+    ],
+  },
+};
+
+// ─── TABELA SILK / TAMPOGRAFIA ────────────────────────────────────────────────
+const SILK = {
+
+  // ── GARRAFAS / SQUEEZES ─────────────────────────────────────────────────────
+  garrafas_gr1: {
+    codigos: ['garrafa','13764B','14817','17012','14873'],
+    nome: 'Squeezes/Garrafas Grupo 01 - Plásticas (17012)',
+    badge: 'badge-garrafa',
+    minimo: 160.00,
+    faixas: [
+      { ate: 133,      preco: 160.00 / 133 },
+      { ate: Infinity, preco: 1.20 },
+    ],
+  },
+  garrafas_gr2: {
+    codigos: ['garrafa','Ga6025','12487B','9139AS','94059'],
+    nome: 'Squeezes/Garrafas Grupo 02 - Alumínio (12487B)',
+    badge: 'badge-garrafa',
+    minimo: 165.00,
+    faixas: [
+      { ate: 110,      preco: 165.00 / 110 },
+      { ate: Infinity, preco: 1.50 },
+    ],
+  },
+  garrafas_gr3: {
+    codigos: ['garrafa','17010B','02112','18715','01115B','14794','94256'],
+    nome: 'Squeezes/Garrafas Grupo 03 - Metal (17010B)',
+    badge: 'badge-garrafa',
+    minimo: 195.00,
+    faixas: [
+      { ate: 100,      preco: 195.00 / 100 },
+      { ate: Infinity, preco: 1.95 },
+    ],
+  },
+  garrafas_gr4: {
+    codigos: ['garrafa','14784','14179','18704','Ga9050','94078'],
+    nome: 'Squeezes/Garrafas Grupo 04 - Premium (18704)',
+    badge: 'badge-garrafa',
+    minimo: 250.00,
+    faixas: [
+      { ate: 71,       preco: 250.00 / 71 },
+      { ate: Infinity, preco: 3.50 },
+    ],
+  },
+  garrafas_vidro: {
+    codigos: ['garrafa','08765B'],
+    nome: 'Garrafa e Copos de Vidro Jateado (08765B)',
+    badge: 'badge-garrafa',
+    minimo: 190.00,
+    faixas: [
+      { ate: 115,      preco: 190.00 / 115 },
+      { ate: Infinity, preco: 1.65 },
+    ],
+  },
+  garrafas_silicone: {
+    codigos: ['garrafa','05074'],
+    nome: 'Garrafa com Luva de Silicone - (05074)',
+    badge: 'badge-garrafa',
+    minimo: 350.00,
+    faixas: [
+      { ate: 89,       preco: 350.00 / 89 },
+      { ate: Infinity, preco: 3.90 },
+    ],
+  },
+  garrafas_tecido: {
+    codigos: ['05075'],
+    nome: 'Garrafa com Luva de Tecido - (05075)',
+    badge: 'badge-garrafa',
+    minimo: 190.00,
+    faixas: [
+      { ate: 102,      preco: 190.00 / 102 },
+      { ate: Infinity, preco: 1.85 },
+    ],
+  },
+  garrafas_dobravel: {
+    codigos: ['squeeze','12459'],
+    nome: 'Squeeze Dobrável - (12459)',
+    badge: 'badge-garrafa',
+    minimo: 160.00,
+    faixas: [
+      { ate: 160,      preco: 160.00 / 160 },
+      { ate: Infinity, preco: 1.00 },
+    ],
+  },
+
+  // ── COPOS / CANECAS ──────────────────────────────────────────────────────────
+  copos_gr1: {
+    codigos: ['14508','01071','14498','13380','14396','14326','06520'],
+    nome: 'Canecas e Copos Grupo 01',
+    badge: 'badge-copo',
+    minimo: 160.00,
+    faixas: [
+      { ate: 133,      preco: 160.00 / 133 },
+      { ate: Infinity, preco: 1.20 },
+    ],
+  },
+  copos_gr2: {
+    codigos: ['03590','07392'],
+    nome: 'Canecas e Copos Grupo 02',
+    badge: 'badge-copo',
+    minimo: 165.00,
+    faixas: [
+      { ate: 110,      preco: 165.00 / 110 },
+      { ate: Infinity, preco: 1.50 },
+    ],
+  },
+  copos_gr3: {
+    codigos: ['03889','18623','14726L','12508','18624'],
+    nome: 'Canecas e Copos Grupo 03',
+    badge: 'badge-copo',
+    minimo: 190.00,
+    faixas: [
+      { ate: 100,      preco: 190.00 / 100 },
+      { ate: Infinity, preco: 1.90 },
+    ],
+  },
+  copos_gr4: {
+    codigos: ['04081','12458','04070'],
+    nome: 'Canecas e Copos Grupo 04',
+    badge: 'badge-copo',
+    minimo: 195.00,
+    faixas: [
+      { ate: 66,       preco: 195.00 / 66 },
+      { ate: Infinity, preco: 2.95 },
+    ],
+  },
+  copos_gr5: {
+    codigos: ['18640','18643','06033','18641'],
+    nome: 'Canecas e Copos Grupo 05',
+    badge: 'badge-copo',
+    minimo: 250.00,
+    faixas: [
+      { ate: 71,       preco: 250.00 / 71 },
+      { ate: Infinity, preco: 3.50 },
+    ],
+  },
+  copos_stanley: {
+    codigos: ['18645L'],
+    nome: 'Copo Réplica Stanley – Promocional',
+    badge: 'badge-copo',
+    minimo: 195.00,
+    faixas: [
+      { ate: 102,      preco: 195.00 / 102 },
+      { ate: Infinity, preco: 1.90 },
+    ],
+  },
+
+  // ── CANETAS ─────────────────────────────────────────────────────────────────
+  canetas: {
+    codigos: ['caneta','lapis','13690'],
+    nome: 'Canetas Plásticas - Lápis',
+    badge: 'badge-caneta',
+    minimo: 250.00,
+    faixas: [
+      { ate: 1000,      preco: 250.00 / 1000 },
+      { ate: Infinity, preco: .25 },
+    ],
+  },
+  canetas10mm: {
+    codigos: ['caneta','lapis','13690'],
+    nome: 'Canetas Plásticas - Lápis 2 ATÉ 10MM',
+    badge: 'badge-caneta',
+    minimo: 300.00,
+    faixas: [
+      { ate: 857,      preco: 300.00 / 857 },
+      { ate: Infinity, preco: .35 },
+    ],
+  },
+  canetas11mm: {
+    codigos: ['caneta','lapis','13690'],
+    nome: 'Canetas Plásticas - Lápis 3 ATÉ 11MM',
+    badge: 'badge-caneta',
+    minimo: 300.00,
+    faixas: [
+      { ate: 769,      preco: 300.00 / 769 },
+      { ate: Infinity, preco: .39 },
+    ],
+  },
+
+  // ── CADERNOS ─────────────────────────────────────────────────────────────────
+  caderno_pequeno: {
+    codigos: ['moleskine','caderno','05067','05049','12244','12398','02601'],
+    nome: 'Caderneta Tipo Moleskine / Blocos / Caderno Pequenos',
+    badge: 'badge-caderno',
+    minimo: 160.00,
+    faixas: [
+      { ate: 145,      preco: 160.00 / 145 },
+      { ate: Infinity, preco: 1.10 },
+    ],
+  },
+  caderno_gr1: {
+    codigos: ['18504','CAD390','13708','13600','14802'],
+    nome: 'Caderno Grupo 01',
+    badge: 'badge-caderno',
+    minimo: 165.00,
+    faixas: [
+      { ate: 103,      preco: 165.00 / 103 },
+      { ate: Infinity, preco: 1.60 },
+    ],
+  },
+  caderno_gr2: {
+    codigos: ['CAD340','14611','13603'],
+    nome: 'Caderno Grupo 02',
+    badge: 'badge-caderno',
+    minimo: 180.00,
+    faixas: [
+      { ate: 72,       preco: 180.00 / 72 },
+      { ate: Infinity, preco: 2.50 },
+    ],
+  },
+
+  // ── SILICONE / ELETRÔNICOS / OUTROS ─────────────────────────────────────────
+  silicone_gr1: {
+    codigos: ['porta-cartao','14990','18636','18578'],
+    nome: 'Peças de Silicone Grupo 01',
+    badge: 'badge-silicone',
+    minimo: 200.00,
+    faixas: [
+      { ate: 111,      preco: 200 / 111 },
+      { ate: Infinity, preco: 1.80 },
+    ],
+  },
+  massageador_gr1: {
+    codigos: ['04055','18562','18660'],
+    nome: 'Massageadores Faciais / Smart Watch Silicone Gr.01',
+    badge: 'badge-silicone',
+    minimo: 250.00,
+    faixas: [
+      { ate: 86,       preco: 250.00 / 86 },
+      { ate: Infinity, preco: 2.90 },
+    ],
+  },
+  adaptador: {
+    codigos: ['12638','13240','91955','12230','12421'],
+    nome: 'Adaptador Tomada / Carregador / Calculadora / Estojo',
+    badge: 'badge-eletronico',
+    minimo: 160.00,
+    faixas: [
+      { ate: 123,      preco: 160.00 / 123 },
+      { ate: Infinity, preco: 1.30 },
+    ],
+  },
+  chaveiro: {
+    codigos: ['chaveiro-abridor','09824','04011'],
+    nome: 'Chaveiros de Metal / Porta Óculos',
+    badge: 'badge-outro',
+    minimo: 160.00,
+    faixas: [
+      { ate: 145,      preco: 160.00 / 145 },
+      { ate: Infinity, preco: 1.10 },
+    ],
+  },
+  fone_grande: {
+    codigos: ['13474'],
+    nome: 'Fone de Ouvido Grande (Sem marca)',
+    badge: 'badge-eletronico',
+    minimo: 250.00,
+    faixas: [
+      { ate: 43,       preco: 250.00 / 43 },
+      { ate: Infinity, preco: 5.80 },
+    ],
+  },
+  fone_pequeno_a: {
+    codigos: ['14199','06064','18596'],
+    nome: 'Caixinha de Fone Pequeno – Tipo A',
+    badge: 'badge-eletronico',
+    minimo: 180.00,
+    faixas: [
+      { ate: 90,       preco: 180.00 / 90 },
+      { ate: Infinity, preco: 2.00 },
+    ],
+  },
+  fone_pequeno_b: {
+    codigos: ['12789'],
+    nome: 'Caixinha de Fone Pequeno – Tipo B',
+    badge: 'badge-eletronico',
+    minimo: 160.00,
+    faixas: [
+      { ate: 106,      preco: 160.00 / 106 },
+      { ate: Infinity, preco: 1.50 },
+    ],
+  },
+  powerbank_simples: {
+    codigos: ['06053'],
+    nome: 'Power Bank Promocional',
+    badge: 'badge-eletronico',
+    minimo: 200.00,
+    faixas: [
+      { ate: 57,       preco: 200.00 / 57 },
+      { ate: Infinity, preco: 3.50 },
+    ],
+  },
+  powerbank_premium_a: {
+    codigos: ['04052','04050','05037'],
+    nome: 'Power Bank Premium',
+    badge: 'badge-eletronico',
+    minimo: 250.00,
+    faixas: [
+      { ate: 45,       preco: 250.00 / 45 },
+      { ate: Infinity, preco: 5.50 },
+    ],
+  },
+  powerbank_premium_b: {
+    codigos: ['05038'],
+    nome: 'Power Bank Premium Grande',
+    badge: 'badge-eletronico',
+    minimo: 250.00,
+    faixas: [
+      { ate: 38,       preco: 250.00 / 38 },
+      { ate: Infinity, preco: 6.50 },
+    ],
+  },
+  caixinha_som_gr1: {
+    codigos: ['12926'],
+    nome: 'Caixinha de Som Grupo 01',
+    badge: 'badge-eletronico',
+    minimo: 180.00,
+    faixas: [
+      { ate: 90,       preco: 180.00 / 90 },
+      { ate: Infinity, preco: 2.00 },
+    ],
+  },
+  caixinha_som_gr2: {
+    codigos: ['13905','04361','12901'],
+    nome: 'Caixinha de Som Grupo 02',
+    badge: 'badge-eletronico',
+    minimo: 200.00,
+    faixas: [
+      { ate: 66,       preco: 200.00 / 66 },
+      { ate: Infinity, preco: 3.00 },
+    ],
+  },
+  caixinha_som_gr3: {
+    codigos: ['02017'],
+    nome: 'Caixinha de Som Grupo 03',
+    badge: 'badge-eletronico',
+    minimo: 250.00,
+    faixas: [
+      { ate: 39,       preco: 250.00 / 39 },
+      { ate: Infinity, preco: 6.30 },
+    ],
+  },
+  espelho_ferramenta: {
+    codigos: ['10232','02910','13724','18514','01093','14248'],
+    nome: 'Espelho / Kit Ferramenta / Trena / Régua / Ring Light',
+    badge: 'badge-outro',
+    minimo: 160.00,
+    faixas: [
+      { ate: 145,      preco: 160.00 / 145 },
+      { ate: Infinity, preco: 1.10 },
+    ],
+  },
+  kit_ferramenta: {
+    codigos: ['13349','14011','07494'],
+    nome: 'Kit Ferramenta / Lanterna / Aspirador',
+    badge: 'badge-outro',
+    minimo: 200.00,
+    faixas: [
+      { ate: 80,       preco: 200.00 / 80 },
+      { ate: Infinity, preco: 2.50 },
+    ],
+  },
+  suporte_celular: {
+    codigos: ['03040'],
+    nome: 'Suporte de Celular',
+    badge: 'badge-eletronico',
+    minimo: 165.00,
+    faixas: [
+      { ate: 100,      preco: 165.00 / 100 },
+      { ate: Infinity, preco: 1.65 },
+    ],
+  },
+  mousepad: {
+    codigos: ['01810','03007'],
+    nome: 'Mouse Pad',
+    badge: 'badge-outro',
+    minimo: 165.00,
+    faixas: [
+      { ate: 100,      preco: 165.00 / 100 },
+      { ate: Infinity, preco: 1.65 },
+    ],
+  },
+  balde_pipoca: {
+    codigos: ['14872'],
+    nome: 'Balde de Pipoca Rígido',
+    badge: 'badge-outro',
+    minimo: 200.00,
+    faixas: [
+      { ate: 100,      preco: 200.00 / 100 },
+      { ate: Infinity, preco: 2.00 },
+    ],
+  },
+  saca_rolhas: {
+    codigos: ['18560','18555','03004'],
+    nome: 'Saca-Rolhas Elétrico',
+    badge: 'badge-outro',
+    minimo: 200.00,
+    faixas: [
+      { ate: 50,       preco: 200.00 / 50 },
+      { ate: Infinity, preco: 4.00 },
+    ],
+  },
+
+  // ── BOLSAS / SACOS ───────────────────────────────────────────────────────────
+  mochila_tecido: {
+    codigos: ['mochila','04508','92163','01444'],
+    nome: 'Mochila Promocional de Tecido',
+    badge: 'badge-bolsa',
+    minimo: 290.00,
+    faixas: [
+      { ate: 89,       preco: 290.00 / 89 },
+      { ate: Infinity, preco: 3.25 },
+    ],
+  },
+  mochila_antifurto: {
+    codigos: ['mochila'],
+    nome: 'Mochila Anti-Furto',
+    badge: 'badge-bolsa',
+    minimo: 350.00,
+    faixas: [
+      { ate: 63,       preco: 350.00 / 63 },
+      { ate: Infinity, preco: 5.50 },
+    ],
+  },
+  sacochila: {
+    codigos: ['18601','02079'],
+    nome: 'Sacochila (Gravação até 150x150mm)',
+    badge: 'badge-bolsa',
+    minimo: 190.00,
+    faixas: [
+      { ate: 126,      preco: 190.00 / 126 },
+      { ate: Infinity, preco: 1.50 },
+    ],
+  },
+  sacola_tnt_metalizada1: {
+    codigos: ['sacola-metalizada','18537G','18537P','09142','09143'],
+    nome: 'Sacola de TNT Metalizada (Gravação até 200x200mm)',
+    badge: 'badge-bolsa',
+    minimo: 190.00,
+    faixas: [
+      { ate: 102,      preco: 190.00 / 102 },
+      { ate: Infinity, preco: 1.85 },
+    ],
+  },
+  sacola_tnt_metalizada2: {
+    codigos: ['sacola-metalizada','18537G','18537P','09142','09143'],
+    nome: 'Sacola de TNT Metalizada (Gravação até 380x300mm)',
+    badge: 'badge-bolsa',
+    minimo: 225.00,
+    faixas: [
+      { ate: 100,      preco: 225.00 / 102 },
+      { ate: Infinity, preco: 2.25 },
+    ],
+  },
+  sacola_tecido: {
+    codigos: ['sacola','sacola-tnt','13780'],
+    nome: 'Sacola de Tecido (Gravação até 150x150mm)',
+    badge: 'badge-bolsa',
+    minimo: 190.00,
+    faixas: [
+      { ate: 115,      preco: 190.00 / 115 },
+      { ate: Infinity, preco: 1.65 },
+    ],
+  },
+  sacola_tecido2: {
+    codigos: ['13803N','18595','02081N'],
+    nome: 'Sacola de Tecido (Gravação até 280x300mm)',
+    badge: 'badge-bolsa',
+    minimo: 225.00,
+    faixas: [
+      { ate: 112,      preco: 225.00 / 112 },
+      { ate: Infinity, preco: 2.00 },
+    ],
+  },
+  bolsa_ter_gr1: {
+    codigos: ['14776','18503','18423','02799','14310'],
+    nome: 'Bolsa Térmica Grupo 01',
+    badge: 'badge-bolsa',
+    minimo: 190.00,
+    faixas: [
+      { ate: 115,      preco: 190.00 / 115 },
+      { ate: Infinity, preco: 1.65 },
+    ],
+  },
+  bolsa_ter_gr2: {
+    codigos: ['04045','14202','04357','04628','1329P'],
+    nome: 'Bolsa Térmica Grupo 02',
+    badge: 'badge-bolsa',
+    minimo: 225.00,
+    faixas: [
+      { ate: 86,       preco: 225.00 / 86 },
+      { ate: Infinity, preco: 2.60 },
+    ],
+  },
+  bolsa_ter_gr3: {
+    codigos: ['18603','04385'],
+    nome: 'Bolsa Térmica Grupo 03',
+    badge: 'badge-bolsa',
+    minimo: 250.00,
+    faixas: [
+      { ate: 83,       preco: 250.00 / 83 },
+      { ate: Infinity, preco: 3.00 },
+    ],
+  },
+  bolsa_ter_gr4: {
+    codigos: ['Bt302','04334','14704'],
+    nome: 'Bolsa Térmica Grupo 04',
+    badge: 'badge-bolsa',
+    minimo: 300.00,
+    faixas: [
+      { ate: 50,       preco: 300.00 / 50 },
+      { ate: Infinity, preco: 5.90 },
+    ],
+  },
+  bolsa_esp_gr1: {
+    codigos: ['04041','02093','18593'],
+    nome: 'Bolsa Esportiva Grupo 01',
+    badge: 'badge-bolsa',
+    minimo: 260.00,
+    faixas: [
+      { ate: 100,      preco: 260.00 / 100 },
+      { ate: Infinity, preco: 2.60 },
+    ],
+  },
+  bolsa_esp_gr2: {
+    codigos: ['04085','05096','05013'],
+    nome: 'Bolsa Esportiva Grupo 02',
+    badge: 'badge-bolsa',
+    minimo: 300.00,
+    faixas: [
+      { ate: 66,       preco: 300.00 / 66 },
+      { ate: Infinity, preco: 4.50 },
+    ],
+  },
+  necessaire_gr1: {
+    codigos: ['necessaire','18516','02092','13450','18534','14612','18533'],
+    nome: 'Necessaire Grupo 01',
+    badge: 'badge-bolsa',
+    minimo: 160.00,
+    faixas: [
+      { ate: 106,      preco: 160.00 / 106 },
+      { ate: Infinity, preco: 1.60 },
+    ],
+  },
+  necessaire_gr2: {
+    codigos: ['necessaire','15333','01228P','18650','18501','14414'],
+    nome: 'Necessaire Grupo 02',
+    badge: 'badge-bolsa',
+    minimo: 190.00,
+    faixas: [
+      { ate: 100,      preco: 190.00 / 100 },
+      { ate: Infinity, preco: 1.90 },
+    ],
+  },
+  necessaire_gr3: {
+    codigos: ['necessaire','18507','14572','14937','14430','18506'],
+    nome: 'Necessaire Grupo 03',
+    badge: 'badge-bolsa',
+    minimo: 225.00,
+    faixas: [
+      { ate: 90,       preco: 225.00 / 90 },
+      { ate: Infinity, preco: 2.50 },
+    ],
+  },
+  kit_viagem: {
+    codigos: ['12480'],
+    nome: 'Kit Viagem',
+    badge: 'badge-bolsa',
+    minimo: 190.00,
+    faixas: [
+      { ate: 105,      preco: 190.00 / 105 },
+      { ate: Infinity, preco: 1.80 },
+    ],
+  },
+  kit_churrasco_simples: {
+    codigos: ['07447'],
+    nome: 'Kit Churrasco Simples (Estojo 2 peças / Avental)',
+    badge: 'badge-bolsa',
+    minimo: 190.00,
+    faixas: [
+      { ate: 105,      preco: 190.00 / 105 },
+      { ate: Infinity, preco: 1.80 },
+    ],
+  },
+  kit_churrasco_grande: {
+    codigos: ['12089'],
+    nome: 'Kit Churrasco Grande (8 peças)',
+    badge: 'badge-bolsa',
+    minimo: 250.00,
+    faixas: [
+      { ate: 50,       preco: 250.00 / 50 },
+      { ate: Infinity, preco: 5.00 },
+    ],
+  },
+  pasta_zipzap: {
+    codigos: ['13253'],
+    nome: 'Pasta Zip Zap',
+    badge: 'badge-bolsa',
+    minimo: 190.00,
+    faixas: [
+      { ate: 115,      preco: 190.00 / 115 },
+      { ate: Infinity, preco: 1.65 },
+    ],
+  },
+
+  // ── ROUPAS / TÊXTEIS ─────────────────────────────────────────────────────────
+  camiseta: {
+    codigos: ['Camiseta','Camisa'],
+    nome: 'Camiseta - Gravação Peito/Costas',
+    badge: 'badge-roupa',
+    minimo: 350.00,
+    faixas: [
+      { ate: 100,      preco: 350.00 / 100 },
+      { ate: Infinity, preco: 3.50 },
+    ],
+  },
+  camiseta_manga: {
+    codigos: ['Camiseta','Camisa'],
+    nome: 'Camiseta - Gravação Manga',
+    badge: 'badge-roupa',
+    minimo: 250.00,
+    faixas: [
+      { ate: 100,      preco: 250.00 / 100 },
+      { ate: Infinity, preco: 2.50 },
+    ],
+  },
+  chapeu: {
+    codigos: ['05050'],
+    nome: 'Chapéu',
+    badge: 'badge-roupa',
+    minimo: 250.00,
+    faixas: [
+      { ate: 100,      preco: 250.00 / 100 },
+      { ate: Infinity, preco: 2.50 },
+    ],
+  },
+  toalha_esportiva: {
+    codigos: ['99967'],
+    nome: 'Toalha Esportiva',
+    badge: 'badge-roupa',
+    minimo: 190.00,
+    faixas: [
+      { ate: 115,      preco: 190.00 / 115 },
+      { ate: Infinity, preco: 1.65 },
+    ],
+  },
+  toalha_banho: {
+    codigos: ['58377'],
+    nome: 'Toalha de Banho',
+    badge: 'badge-roupa',
+    minimo: 350.00,
+    faixas: [
+      { ate: 100,      preco: 350.00 / 100 },
+      { ate: Infinity, preco: 3.50 },
+    ],
+  },
+  tapete_yoga: {
+    codigos: ['01895'],
+    nome: 'Tapete de Yoga (Gravação até 300x150mm)',
+    badge: 'badge-roupa',
+    minimo: 350.00,
+    faixas: [
+      { ate: 87,       preco: 350.00 / 87 },
+      { ate: Infinity, preco: 4.00 },
+    ],
+  },
+  guarda_chuva_tecido: {
+    codigos: ['05099'],
+    nome: 'Guarda-Chuva de Tecido',
+    badge: 'badge-roupa',
+    minimo: 250.00,
+    faixas: [
+      { ate: 119,      preco: 250.00 / 119 },
+      { ate: Infinity, preco: 2.10 },
+    ],
+  },
+  guarda_chuva_plastico: {
+    codigos: ['18680'],
+    nome: 'Guarda-Chuva de Plástico',
+    badge: 'badge-roupa',
+    minimo: 250.00,
+    faixas: [
+      { ate: 100,      preco: 250.00 / 100 },
+      { ate: Infinity, preco: 2.50 },
+    ],
+  },
+};
+
+// ─── TABELA LASER (Fibra · CO2 · Rotacionado) ─────────────────────────────────
+// OBS: Laser NÃO tem fotolito. Faturamento mínimo padrão = R$ 100,00.
+// As faixas seguem a mesma estrutura do Silk.
+
+const LASER = {
+
+  // ── CANETAS / ESTOJOS / CHAVEIROS ────────────────────────────────────────────
+  caneta_lapiseira: {
+    codigos: ['caneta','chaveiro-abridor','13546B','09824'],
+    nome: 'Canetas / Lapiseiras / Estojos / Chaveiro Abridor',
+    badge: 'badge-caneta',
+    minimo: 100.00,
+    faixas: [
+      { ate: 149,      preco: 100.00 / 149 },
+      { ate: 500,      preco: 0.67 },
+      { ate: 1000,     preco: 0.55 },
+      { ate: Infinity, preco: 0.49 },
+    ],
+  },
+  caneta_metal_par: {
+    codigos: ['caneta','180PAR'],
+    nome: 'Canetas / Lapiseiras – Gravação 40x18mm',
+    badge: 'badge-caneta',
+    minimo: 100.00,
+    faixas: [
+      { ate: 135,      preco: 100.00 / 135 },
+      { ate: 500,      preco: 0.74 },
+      { ate: 1000,     preco: 0.67 },
+      { ate: Infinity, preco: 0.59 },
+    ],
+  },
+  estojo_box10: {
+    codigos: ['BOX-10'],
+    nome: 'Estojo BOX-10 – Gravação 80x20mm',
+    badge: 'badge-caneta',
+    minimo: 100.00,
+    faixas: [
+      { ate: 90,       preco: 100.00 / 90 },
+      { ate: 500,      preco: 1.10 },
+      { ate: 1000,     preco: 0.99 },
+      { ate: Infinity, preco: 0.84 },
+    ],
+  },
+  chaveiro_canivete: {
+    codigos: ['10695','1263','13383','1955','10006','4480'],
+    nome: 'Chaveiros / Pen Drives / Lanterna / Porta Cartões',
+    badge: 'badge-outro',
+    minimo: 100.00,
+    faixas: [
+      { ate: 135,      preco: 100.00 / 135 },
+      { ate: 500,      preco: 0.74 },
+      { ate: 1000,     preco: 0.67 },
+      { ate: Infinity, preco: 0.59 },
+    ],
+  },
+  porta_cartao_celular: {
+    codigos: ['P@13935'],
+    nome: 'Porta Cartão de Celular',
+    badge: 'badge-eletronico',
+    minimo: 100.00,
+    faixas: [
+      { ate: 111,      preco: 100.00 / 111 },
+      { ate: 500,      preco: 0.90 },
+      { ate: 1000,     preco: 0.70 },
+      { ate: Infinity, preco: 0.65 },
+    ],
+  },
+  // ── OUTRO ──────────────────────────────────────────────────────
+  kit_masculino: {
+    codigos: ['kit-masculino','10124'],
+    nome: 'Kit Masculino',
+    badge: 'badge-eletronico',
+    minimo: 150.00,
+    faixas: [
+      { ate: 50,      preco: 150.00 / 50 },
+      { ate: Infinity, preco: 3 },
+    ],
+  },
+
+  // ── GARRAFAS / SQUEEZES ──────────────────────────────────────────────────────
+  garrafa_laser_gr1_pequena: {
+    codigos: ['9139I'],
+    nome: 'Garrafas Laser – Gravação 30x50mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 61,       preco: 100.00 / 61 },
+      { ate: 500,      preco: 1.65 },
+      { ate: 1000,     preco: 1.34 },
+      { ate: Infinity, preco: 1.18 },
+    ],
+  },
+  garrafa_laser_14846_pequena: {
+    codigos: ['14846'],
+    nome: 'Garrafas Laser – Gravação 26x50mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 98,       preco: 100.00 / 98 },
+      { ate: 500,      preco: 1.05 },
+      { ate: 1000,     preco: 0.84 },
+      { ate: Infinity, preco: 0.78 },
+    ],
+  },
+
+  // ── GARRAFAS TÉRMICAS ─────────────────────────────────────────────────────────
+  garrafa_termica_pequena: {
+    codigos: ['01116'],
+    nome: 'Garrafa Térmica até 1,5L – Gravação 35x50mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 44,       preco: 100.00 / 44 },
+      { ate: 500,      preco: 2.24 },
+      { ate: 1000,     preco: 2.12 },
+      { ate: Infinity, preco: 1.99 },
+    ],
+  },
+  garrafa_termica_grande: {
+    codigos: ['18679','18677'],
+    nome: 'Garrafa Térmica até 1,5L – Gravação 35x100mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 29,       preco: 100.00 / 29 },
+      { ate: 500,      preco: 3.36 },
+      { ate: 1000,     preco: 3.24 },
+      { ate: Infinity, preco: 3.13 },
+    ],
+  },
+  cantil_whisky_pequeno: {
+    codigos: ['10390'],
+    nome: 'Cantil de Whisky – Gravação pequena 40x20mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 59,       preco: 100.00 / 59 },
+      { ate: 500,      preco: 1.68 },
+      { ate: 1000,     preco: 1.45 },
+      { ate: Infinity, preco: 1.23 },
+    ],
+  },
+
+  // ── CANECAS / COPOS LASER ────────────────────────────────────────────────────
+  caneca_inox_pequena: {
+    codigos: ['07392'],
+    nome: 'Caneca Inox – Gravação 26x26mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 100,      preco: 100.00 / 100 },
+      { ate: 500,      preco: 1.00 },
+      { ate: 1000,     preco: .9 },
+      { ate: Infinity, preco: 0.85 },
+    ],
+  },
+  caneca_inox_pequena2: {
+    codigos: ['07392'],
+    nome: 'Caneca Inox – Gravação 26x50mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 83,      preco: 100.00 / 83 },
+      { ate: 500,      preco: 1.20 },
+      { ate: 1000,     preco: 1.10 },
+      { ate: Infinity, preco: 1.05 },
+    ],
+  },
+  caneca_inox_grande: {
+    codigos: ['03889'],
+    nome: 'Caneca Inox – Gravação 35x50mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 50,       preco: 100.00 / 50 },
+      { ate: 500,      preco: 2.00 },
+      { ate: 1000,     preco: 1.90 },
+      { ate: Infinity, preco: 1.80 },
+    ],
+  },
+  caneca_misturador_pequena: {
+    codigos: ['12458'],
+    nome: 'Caneca com Misturador – Gravação 26x35mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 40,       preco: 100.00 / 40 },
+      { ate: 500,      preco: 2.50 },
+      { ate: 1000,     preco: 2.10 },
+      { ate: Infinity, preco: 1.90 },
+    ],
+  },
+  copo_stanley_laser_pequeno: {
+    codigos: ['18645L'],
+    nome: 'Copo Réplica Stanley – Gravação 26x60mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 50,       preco: 100.00 / 50 },
+      { ate: 500,      preco: 2.00 },
+      { ate: 1000,     preco: 1.90 },
+      { ate: Infinity, preco: 1.80 },
+    ],
+  },
+  copo_stanley_laser_medio: {
+    codigos: ['18645L'],
+    nome: 'Copo Réplica Stanley – Gravação 35x50mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 47,       preco: 100.00 / 47 },
+      { ate: 500,      preco: 2.10 },
+      { ate: 1000,     preco: 2.00 },
+      { ate: Infinity, preco: 1.90 },
+    ],
+  },
+  caneca_termica_premium_pequena: {
+    codigos: ['18641','04070'],
+    nome: 'Caneca Térmica Premium – Gravação 26x26mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 40,       preco: 100.00 / 40 },
+      { ate: 500,      preco: 2.50 },
+      { ate: 1000,     preco: 2.10 },
+      { ate: Infinity, preco: 1.90 },
+    ],
+  },
+  copo_termico_14726L: {
+    codigos: ['14726L'],
+    nome: 'Copo/Caneca Térmica – Gravação 26x26mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 47,       preco: 100.00 / 47 },
+      { ate: 500,      preco: 2.10 },
+      { ate: 1000,     preco: 2.00 },
+      { ate: Infinity, preco: 1.90 },
+    ],
+  },
+  copo_termico_18623: {
+    codigos: ['18623'],
+    nome: 'Copo/Caneca Térmica – Gravação 30x35mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 43,       preco: 100.00 / 43 },
+      { ate: 500,      preco: 2.30 },
+      { ate: 1000,     preco: 2.20 },
+      { ate: Infinity, preco: 2.10 },
+    ],
+  },
+  copo_termico_04081: {
+    codigos: ['04081'],
+    nome: 'Copo/Caneca Térmica – Gravação 35x40mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 41,       preco: 100.00 / 41 },
+      { ate: 500,      preco: 2.40 },
+      { ate: 1000,     preco: 2.30 },
+      { ate: Infinity, preco: 2.20 },
+    ],
+  },
+  copo_termico_18640: {
+    codigos: ['18640'],
+    nome: 'Copo/Caneca Térmica – Gravação 40x50mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 38,       preco: 100.00 / 38 },
+      { ate: 500,      preco: 2.60 },
+      { ate: 1000,     preco: 2.50 },
+      { ate: Infinity, preco: 2.40 },
+    ],
+  },
+
+  // ── KITS LASER ───────────────────────────────────────────────────────────────
+  kit_churrasco_maleta: {
+    codigos: ['2759'],
+    nome: 'Kit Churrasco – Gravação na Maleta (65x40mm)',
+    badge: 'badge-laser',
+    minimo: 150.00,
+    faixas: [
+      { ate: 75,       preco: 150.00 / 75 },
+      { ate: 500,      preco: 2.00 },
+      { ate: 1000,     preco: 1.95 },
+      { ate: Infinity, preco: 2.00 },
+    ],
+  },
+  kit_churrasco_pecas: {
+    codigos: ['07447'],
+    nome: 'Kit Churrasco – Gravação nas Peças Internas (25x10mm)',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 101,      preco: 100.00 / 101 },
+      { ate: 500,      preco: 0.99 },
+      { ate: 1000,     preco: 0.89 },
+      { ate: Infinity, preco: 0.75 },
+    ],
+  },
+  kit_queijo_pequeno: {
+    codigos: ['3222','8542'],
+    nome: 'Kit Queijo – Gravação 70x25mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 40,       preco: 100.00 / 40 },
+      { ate: 500,      preco: 2.50 },
+      { ate: 1000,     preco: 2.45 },
+      { ate: Infinity, preco: 2.40 },
+    ],
+  },
+  kit_queijo_garfo: {
+    codigos: ['4236'],
+    nome: 'Kit Queijo – Garfo / Espátula (25x10mm)',
+    badge: 'badge-laser',
+    minimo: 150.00,
+    faixas: [
+      { ate: 88,       preco: 150.00 / 88 },
+      { ate: 500,      preco: 1.70 },
+      { ate: 1000,     preco: 1.60 },
+      { ate: Infinity, preco: 1.50 },
+    ],
+  },
+
+  // ── PASTA / NECESSAIRE / MOLESKINE ───────────────────────────────────────────
+  pasta_convencao_plaquinha: {
+    codigos: ['3015'],
+    nome: 'Pasta Convenção – Gravação na Plaquinha',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 58,       preco: 100.00 / 58 },
+      { ate: 500,      preco: 1.70 },
+      { ate: 1000,     preco: 1.46 },
+      { ate: Infinity, preco: 1.35 },
+    ],
+  },
+  pasta_convencao_media: {
+    codigos: ['10108'],
+    nome: 'Pasta Convenção – Gravação 80x40mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 45,       preco: 100.00 / 45 },
+      { ate: 500,      preco: 2.20 },
+      { ate: 1000,     preco: 2.00 },
+      { ate: Infinity, preco: 1.80 },
+    ],
+  },
+  moleskine_necessaire: {
+    codigos: ['14917P','18504','01228P'],
+    nome: 'Moleskine / Necessaire com Plaquinha – 70x25mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 66,       preco: 100.00 / 66 },
+      { ate: 500,      preco: 1.50 },
+      { ate: 1000,     preco: 1.30 },
+      { ate: Infinity, preco: 1.20 },
+    ],
+  },
+
+  // ── CAIXINHA DE SOM LASER ────────────────────────────────────────────────────
+  caixinha_som_laser: {
+    codigos: ['57256','57253','4362'],
+    nome: 'Caixinha de Som – Laser',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 66,       preco: 100.00 / 66 },
+      { ate: 500,      preco: 1.50 },
+      { ate: 1000,     preco: 1.30 },
+      { ate: Infinity, preco: 1.10 },
+    ],
+  },
+
+  // ── SACA-ROLHAS LASER ────────────────────────────────────────────────────────
+  saca_rolhas_laser: {
+    codigos: ['18560'],
+    nome: 'Saca-Rolhas Elétrico – Laser (22x45mm)',
+    badge: 'badge-laser',
+    minimo: 150.00,
+    faixas: [
+      { ate: 50,       preco: 150.00 / 50 },
+      { ate: 500,      preco: 3.00 },
+      { ate: 1000,     preco: 2.80 },
+      { ate: Infinity, preco: 2.60 },
+    ],
+  },
+
+  // ── MOCHILAS COM PLAQUINHA ───────────────────────────────────────────────────
+  mochila_plaquinha: {
+    codigos: ['92163'],
+    nome: 'Mochila com Placa já Aplicada – Laser 40x20mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 20,       preco: 100.00 / 20 },
+      { ate: 500,      preco: 5.00 },
+      { ate: 1000,     preco: 4.50 },
+      { ate: Infinity, preco: 4.10 },
+    ],
+  },
+  plaquinha_mochila: {
+    codigos: ['13930'],
+    nome: 'Somente Plaquinha de Mochila – 40x20mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 163,      preco: 100.00 / 163 },
+      { ate: 500,      preco: 0.61 },
+      { ate: 1000,     preco: 0.55 },
+      { ate: Infinity, preco: 0.49 },
+    ],
+  },
+
+  // ── TAÇAS / TÁBUA DE CORTE (Laser CO2) ───────────────────────────────────────
+  taca_vidro_pequena: {
+    codigos: ['58002'],
+    nome: 'Taça de Vidro – Laser CO2 – Gravação 28x40mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 50,       preco: 100.00 / 50 },
+      { ate: 500,      preco: 2.00 },
+      { ate: 1000,     preco: 1.80 },
+      { ate: Infinity, preco: 1.60 },
+    ],
+  },
+  taca_vidro_grande: {
+    codigos: ['56080'],
+    nome: 'Taça de Vidro – Laser CO2 – Gravação 35x40mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 40,       preco: 100.00 / 40 },
+      { ate: 500,      preco: 2.50 },
+      { ate: 1000,     preco: 2.30 },
+      { ate: Infinity, preco: 2.20 },
+    ],
+  },
+  tabua_corte_pequena: {
+    codigos: ['18592'],
+    nome: 'Tábua de Corte – Laser CO2 – Gravação 70x25mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 40,       preco: 100.00 / 40 },
+      { ate: 500,      preco: 2.50 },
+      { ate: 1000,     preco: 2.45 },
+      { ate: Infinity, preco: 2.40 },
+    ],
+  },
+  tabua_corte_grande: {
+    codigos: ['18608'],
+    nome: 'Tábua de Corte – Laser CO2 – Gravação 100x100mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 22,       preco: 100.00 / 22 },
+      { ate: 500,      preco: 4.50 },
+      { ate: 1000,     preco: 4.30 },
+      { ate: Infinity, preco: 4.10 },
+    ],
+  },
+
+  // ── LASER ROTACIONADO ────────────────────────────────────────────────────────
+  laser_rotac_gr1: {
+    codigos: ['4070'],
+    nome: 'Laser Rotacionado – Peças Diversas Gr.01 (até 55mm)',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 22,       preco: 100.00 / 22 },
+      { ate: 500,      preco: 4.50 },
+      { ate: 1000,     preco: 4.10 },
+      { ate: Infinity, preco: 3.90 },
+    ],
+  },
+  laser_rotac_gr2: {
+    codigos: ['14846'],
+    nome: 'Laser Rotacionado – Peças Diversas Gr.02 (56–70mm)',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 20,       preco: 100.00 / 20 },
+      { ate: 500,      preco: 5.00 },
+      { ate: 1000,     preco: 4.60 },
+      { ate: Infinity, preco: 4.20 },
+    ],
+  },
+  laser_rotac_gr3: {
+    codigos: ['14703'],
+    nome: 'Laser Rotacionado – Peças Diversas Gr.03 (71–90mm)',
+    badge: 'badge-laser',
+    minimo: 200.00,
+    faixas: [
+      { ate: 26,       preco: 200.00 / 26 },
+      { ate: 500,      preco: 7.50 },
+      { ate: 1000,     preco: 7.10 },
+      { ate: Infinity, preco: 6.90 },
+    ],
+  },
+  laser_rotac_gr4_360: {
+    codigos: ['14703'],
+    nome: 'Laser Rotacionado 360° – Gravação Total',
+    badge: 'badge-laser',
+    minimo: 300.00,
+    faixas: [
+      { ate: 16,       preco: 300.00 / 16 },
+      { ate: 500,      preco: 18.00 },
+      { ate: 1000,     preco: 17.50 },
+      { ate: Infinity, preco: 17.20 },
+    ],
+  },
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  MOTOR DE BUSCA
+//  Constrói um índice: codNormalizado → [{tabela:'silk'|'laser', tipo, dados}]
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function norm(c) { return String(c).trim().toUpperCase().replace(/\s+/g,'') }
+
+function buildIndex(tabela, nomeTabela) {
+  const idx = {};
+  for (const [key, dados] of Object.entries(tabela)) {
+    for (const cod of dados.codigos) {
+      const k = norm(cod);
+      if (!idx[k]) idx[k] = [];
+      idx[k].push({ tabela: nomeTabela, tipoKey: key, dados });
+    }
+  }
+  return idx;
+}
+
+const IDX_SILK    = buildIndex(SILK,       'silk');
+const IDX_LASER   = buildIndex(LASER,      'laser');
+const IDX_DIGITAL = buildIndex(DIGITAL_UV, 'digital');
+const IDX_SUBLI   = buildIndex(SUBLIMACAO, 'sublimacao');
+
+function buscar(codRaw) {
+  const k = norm(codRaw);
+  const resultados = [];
+  if (IDX_SILK[k])    resultados.push(...IDX_SILK[k]);
+  if (IDX_LASER[k])   resultados.push(...IDX_LASER[k]);
+  if (IDX_DIGITAL[k]) resultados.push(...IDX_DIGITAL[k]);
+  if (IDX_SUBLI[k])   resultados.push(...IDX_SUBLI[k]);
+  return resultados;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  FAIXA
+// ═══════════════════════════════════════════════════════════════════════════════
+function getFaixa(faixas, qty) {
+
+  for (let i = 0; i < faixas.length; i++) {
+    if (qty <= faixas[i].ate) {
+      let label;
+      if (i === 0) {
+        label = '1–' + faixas[i].ate + ' un';
+      } else if (faixas[i].ate === Infinity) {
+        label = (faixas[i-1].ate + 1) + '+ un';
+      } else {
+        label = (faixas[i-1].ate + 1) + '–' + faixas[i].ate + ' un';
+      }
+      return { label, preco: faixas[i].preco };
+    }
+  }
+  // segurança — última faixa
+  const f = faixas[faixas.length - 1];
+  const p = faixas[faixas.length - 2];
+  return { label: (p ? p.ate + 1 : 1) + '+ un', preco: f.preco };
+}
+
+function brl(v) { return 'R$ ' + v.toFixed(2).replace('.', ',') }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  UI HELPERS
+// ═══════════════════════════════════════════════════════════════════════════════
+function setQty(val, btn) {
+  document.querySelectorAll('.qty-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const inp = document.getElementById('qty-input');
+  if (val !== null) { inp.value = val; } else { inp.value = ''; inp.focus(); }
+}
+
+document.getElementById('qty-input').addEventListener('input', () => {
+  document.querySelectorAll('.qty-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-custom').classList.add('active');
+});
+
+document.getElementById('cod').addEventListener('input', () => {
+  document.getElementById('xbz-link').classList.remove('visible');
+});
+
+function showError(msg) {
+  const el = document.getElementById('error-msg');
+  el.textContent = msg;
+  el.style.display = 'block';
+  document.getElementById('result-section').classList.remove('visible');
+  document.getElementById('empty-state').style.display = 'none';
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  CALCULAR
+// ═══════════════════════════════════════════════════════════════════════════════
+function calcular() {
+  document.getElementById('error-msg').style.display = 'none';
+
+  const codRaw = document.getElementById('cod').value.trim();
+  const qty    = parseInt(document.getElementById('qty-input').value);
+
+  if (!codRaw) return showError('Informe o código do produto.');
+  if (!qty || qty < 1) return showError('Informe uma quantidade válida (mínimo 1 peça).');
+
+  const resultados = buscar(codRaw);
+  if (!resultados.length) {
+    return showError(
+      'Código "' + codRaw + '" não encontrado na tabela. ' +
+      'Verifique o código ou entre em contato com o time de vendas.'
+    );
+  }
+
+  // Botão XBZ
+  const xbzLink = document.getElementById('xbz-link');
+  const codNorm = norm(codRaw);
+  xbzLink.href = 'https://www.xbzbrindes.com.br/' + codNorm.toLowerCase();
+  xbzLink.classList.add('visible');
+
+  const stack = document.getElementById('result-stack');
+  stack.innerHTML = '';
+
+  resultados.forEach(({ tabela, tipoKey, dados }) => {
+    const isSilk    = tabela === 'silk';
+    const isDigital = tabela === 'digital';
+    const isLaser   = tabela === 'laser';
+    const isSubli   = tabela === 'sublimacao';
+
+    const fotolito = isSilk ? FOTOLITO_SILK : (isDigital ? FOTOLITO_DIGITAL : (isSubli ? FOTOLITO_SUBLI : FOTOLITO_LASER));
+    const headerClass  = isSilk ? 'silk' : (isDigital ? 'digital' : (isSubli ? 'sublimacao' : 'laser'));
+    const tabelaLabel  = isSilk ? 'Silk / Tampografia' : (isDigital ? 'Digital UV' : (isSubli ? 'Sublimação' : 'Laser'));
+
+    const faixaInfo  = getFaixa(dados.faixas, qty);
+    const totalBruto = faixaInfo.preco * qty;
+
+    let totalFinal = totalBruto;
+    let aplicouMinimo = false;
+    if (totalBruto < dados.minimo) {
+      totalFinal = dados.minimo;
+      aplicouMinimo = true;
+    }
+
+    const totalComFotolito = totalFinal + fotolito;
+
+    const block = document.createElement('div');
+    block.className = 'result-block';
+
+    const badgeHTML = `<span class="badge-cat ${dados.badge}">${dados.nome}</span>`;
+
+    let fotolitoRows = '';
+    if (isSilk) {
+      fotolitoRows = `
+        <div class="result-row">
+          <span class="result-label">Fotolito / Clichê</span>
+          <span class="result-val">${brl(fotolito)}</span>
+        </div>
+        <div class="result-row total-row ${headerClass}">
+          <span class="result-label">Total com fotolito</span>
+          <span class="result-val">${brl(totalComFotolito)}</span>
+        </div>`;
+    } else {
+      fotolitoRows = `
+        <div class="result-row total-row ${headerClass}">
+          <span class="result-label">Total do pedido</span>
+          <span class="result-val">${brl(totalFinal)}</span>
+        </div>`;
+    }
+
+    let avisoMinimo = '';
+    if (aplicouMinimo) {
+      const qtdMinima = Math.ceil(dados.minimo / faixaInfo.preco);
+      avisoMinimo = `
+        <div class="aviso-box aviso-minimo">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--laranja-dk)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:2px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <div>Faturamento mínimo de <strong>${brl(dados.minimo)}</strong> aplicado. Total ajustado de ${brl(totalBruto)} → <strong>${brl(totalFinal)}</strong>. Para atingir sem ajuste: ≥ ${qtdMinima.toLocaleString('pt-BR')} unidades.</div>
+        </div>`;
+    }
+
+    block.innerHTML = `
+      <div class="result-header ${headerClass}">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--laranja)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>${tabelaLabel}</span>
+      </div>
+      <div class="result-body">
+        <div class="result-row">
+          <span class="result-label">Produto</span>
+          <span class="result-val">${codNorm}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Categoria</span>
+          <span class="result-val">${badgeHTML}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Quantidade</span>
+          <span class="result-val">${qty.toLocaleString('pt-BR')} unidades</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Faixa aplicada</span>
+          <span class="result-val">${faixaInfo.label}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Valor unitário</span>
+          <span class="result-val destaque">${brl(aplicouMinimo ? dados.minimo / qty : faixaInfo.preco)}</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Total gravação</span>
+          <span class="result-val">${brl(totalFinal)}</span>
+        </div>
+        ${fotolitoRows}
+      </div>
+      ${avisoMinimo}
+    `;
+
+    stack.appendChild(block);
+  });
+
+  document.getElementById('result-section').classList.add('visible');
+  document.getElementById('empty-state').style.display = 'none';
+}
+</script>
+</body>
+</html>
