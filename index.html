@@ -15,6 +15,7 @@
   --verde:#1A5E38; --verde-lt:#E6F4ED;
   --roxo:#5B21B6; --roxo-lt:#EDE9FE;
   --laranja2:#C0440A; --laranja2-lt:#FDEEE7;
+  --dtf:#0E7490; --dtf-lt:#CFFAFE;
   --cinza-bg:#F0F2F7; --cinza-bd:#DCDCDC; --cinza-tx:#555;
   --vermelho:#b71c1c; --vermelho-lt:#FFEBEE;
   --branco:#fff;
@@ -108,6 +109,11 @@ body{display:flex;justify-content:center;padding:2rem 1rem 4rem;min-height:100vh
 .result-row.total-row.sublimacao{background:var(--laranja2)}
 .badge-sublimacao{background:var(--laranja2-lt);color:var(--laranja2)}
 
+/* Transfer DTF header */
+.result-header.dtf{background:var(--dtf)}
+.result-row.total-row.dtf{background:var(--dtf)}
+.badge-dtf{background:var(--dtf-lt);color:var(--dtf)}
+
 /* Avisos */
 .aviso-box{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;font-size:11px;line-height:1.5;border-left:3px solid;border-radius:0 0 10px 10px}
 .aviso-minimo{background:var(--laranja-lt);border-color:var(--laranja);color:#7A4A00}
@@ -149,7 +155,7 @@ body{display:flex;justify-content:center;padding:2rem 1rem 4rem;min-height:100vh
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--laranja)" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
       Calculadora de Gravação
     </h1>
-    <p>Silk · Tampografia · Laser · Digital UV · Sublimação — XBZ Brindes</p>
+    <p>Silk · Tampografia · Laser · Digital UV · Sublimação · Transfer DTF — XBZ Brindes</p>
   </div>
 
   <div class="body-wrap">
@@ -244,6 +250,11 @@ body{display:flex;justify-content:center;padding:2rem 1rem 4rem;min-height:100vh
         <div class="info-box-price" style="color:var(--laranja2)">Sem fotolito</div>
         <p>Impressão colorida full color. Mínimo <strong>R$ 150,00</strong> (Gr.01/02) ou <strong>R$ 300,00</strong> (Gr.03 – dados variáveis). Enviar 15% a mais de peças para reposição.</p>
       </div>
+      <div class="info-box" style="border-right:none">
+        <div class="info-box-title" style="color:var(--dtf)">Transfer DTF</div>
+        <div class="info-box-price" style="color:var(--dtf)">Sem fotolito</div>
+        <p>Impressão colorida por transferência. Mochilas/Bolsas: mínimo <strong>R$ 250,00</strong> (R$ 3,50/batida). Demais itens: mínimo <strong>R$ 180,00</strong> (R$ 2,00/batida).</p>
+      </div>
     <div class="info-aviso" style="background:var(--azul-light);border-color:var(--azul)">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--azul)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       <p style="color:var(--azul)">Nomes diversos: + R$ 1,50 por nome. Para artes complexas, consulte o time de vendas.</p>
@@ -281,6 +292,45 @@ const FOTOLITO_SILK    = 35.00;
 const FOTOLITO_LASER   =  0.00;  // laser não tem fotolito
 const FOTOLITO_DIGITAL =  0.00;  // digital UV também não tem fotolito
 const FOTOLITO_SUBLI   =  0.00;  // sublimação também não tem fotolito
+const FOTOLITO_DTF     =  0.00;  // transfer DTF também não tem fotolito
+
+
+// ─── TABELA TRANSFER DTF ──────────────────────────────────────────────────────
+// Sem fotolito/clichê. Preço por batida de impressão.
+// Mesma estrutura das outras tabelas.
+//
+// Como adicionar novos grupos:
+//   1. Crie uma nova chave aqui com codigos, nome, badge, minimo e faixas
+//   2. Adicione os códigos dos produtos no array codigos[]
+//   O motor detecta automaticamente e exibe junto com as demais modalidades.
+
+const TRANSFER_DTF = {
+
+  // ── MOCHILAS E BOLSAS ESPORTIVAS ─────────────────────────────────────────────
+  mochilas_bolsas: {
+    codigos: ['mochila'],
+    nome: 'Mochilas e Bolsas Esportivas',
+    badge: 'badge-dtf',
+    minimo: 250.00,
+    faixas: [
+      { ate: 71,       preco: 250.00 / 71 },  // até 71 un = mínimo R$250
+      { ate: Infinity, preco: 3.50 },
+    ],
+  },
+
+  // ── DEMAIS ITENS PROMOCIONAIS ─────────────────────────────────────────────────
+  demais_itens: {
+    codigos: [],
+    nome: 'Demais Itens Promocionais (Sacolas, Camisetas e Outros)',
+    badge: 'badge-dtf',
+    minimo: 180.00,
+    faixas: [
+      { ate: 90,       preco: 180.00 / 90 },  // até 90 un = mínimo R$180
+      { ate: Infinity, preco: 2.00 },
+    ],
+  },
+
+};
 
 
 // ─── TABELA SUBLIMAÇÃO ────────────────────────────────────────────────────────
@@ -729,6 +779,28 @@ const SILK = {
     faixas: [
       { ate: 120,      preco: 180.00 / 120 },
       { ate: Infinity, preco: 1.50 },
+    ],
+  },
+
+  caixa: {
+    codigos: ['caixa','19115'],
+    nome: 'Caixa',
+    badge: 'badge-silk',
+    minimo: 190.00,
+    faixas: [
+      { ate: 100,      preco: 190.00 / 100 },
+      { ate: Infinity, preco: 1.90 },
+    ],
+  },
+
+  kit_vinho: {
+    codigos: ['kit vinho','03494'],
+    nome: 'Kit Vinho',
+    badge: 'badge-silk',
+    minimo: 250.00,
+    faixas: [
+      { ate: 50,      preco: 250.00 / 50 },
+      { ate: Infinity, preco: 5 },
     ],
   },
 
@@ -1182,7 +1254,7 @@ const SILK = {
     ],
   },
   necessaire_gr1: {
-    codigos: ['necessaire','18516','02092','13450','18534','14612','18533'],
+    codigos: ['necessaire','18516','15298','02092','13450','18534','14612','18533'],
     nome: 'Necessaire Grupo 01',
     badge: 'badge-bolsa',
     minimo: 160.00,
@@ -1343,7 +1415,7 @@ const LASER = {
 
   // ── CANETAS / ESTOJOS / CHAVEIROS ────────────────────────────────────────────
   caneta_lapiseira: {
-    codigos: ['caneta','chaveiro-abridor','13546B','09824'],
+    codigos: ['caneta','chaveiro-abridor','13546B','09824','19115'],
     nome: 'Canetas / Lapiseiras / Estojos / Chaveiro Abridor',
     badge: 'badge-caneta',
     minimo: 100.00,
@@ -1885,10 +1957,11 @@ function buildIndex(tabela, nomeTabela) {
   return idx;
 }
 
-const IDX_SILK    = buildIndex(SILK,       'silk');
-const IDX_LASER   = buildIndex(LASER,      'laser');
-const IDX_DIGITAL = buildIndex(DIGITAL_UV, 'digital');
-const IDX_SUBLI   = buildIndex(SUBLIMACAO, 'sublimacao');
+const IDX_SILK    = buildIndex(SILK,          'silk');
+const IDX_LASER   = buildIndex(LASER,         'laser');
+const IDX_DIGITAL = buildIndex(DIGITAL_UV,    'digital');
+const IDX_SUBLI   = buildIndex(SUBLIMACAO,    'sublimacao');
+const IDX_DTF     = buildIndex(TRANSFER_DTF,  'dtf');
 
 function buscar(codRaw) {
   const k = norm(codRaw);
@@ -1897,6 +1970,7 @@ function buscar(codRaw) {
   if (IDX_LASER[k])   resultados.push(...IDX_LASER[k]);
   if (IDX_DIGITAL[k]) resultados.push(...IDX_DIGITAL[k]);
   if (IDX_SUBLI[k])   resultados.push(...IDX_SUBLI[k]);
+  if (IDX_DTF[k])     resultados.push(...IDX_DTF[k]);
   return resultados;
 }
 
@@ -1987,10 +2061,11 @@ function calcular() {
     const isDigital = tabela === 'digital';
     const isLaser   = tabela === 'laser';
     const isSubli   = tabela === 'sublimacao';
+    const isDtf     = tabela === 'dtf';
 
-    const fotolito = isSilk ? FOTOLITO_SILK : (isDigital ? FOTOLITO_DIGITAL : (isSubli ? FOTOLITO_SUBLI : FOTOLITO_LASER));
-    const headerClass  = isSilk ? 'silk' : (isDigital ? 'digital' : (isSubli ? 'sublimacao' : 'laser'));
-    const tabelaLabel  = isSilk ? 'Silk / Tampografia' : (isDigital ? 'Digital UV' : (isSubli ? 'Sublimação' : 'Laser'));
+    const fotolito = isSilk ? FOTOLITO_SILK : (isDigital ? FOTOLITO_DIGITAL : (isSubli ? FOTOLITO_SUBLI : (isDtf ? FOTOLITO_DTF : FOTOLITO_LASER)));
+    const headerClass  = isSilk ? 'silk' : (isDigital ? 'digital' : (isSubli ? 'sublimacao' : (isDtf ? 'dtf' : 'laser')));
+    const tabelaLabel  = isSilk ? 'Silk / Tampografia' : (isDigital ? 'Digital UV' : (isSubli ? 'Sublimação' : (isDtf ? 'Transfer DTF' : 'Laser')));
 
     const faixaInfo  = getFaixa(dados.faixas, qty);
     const totalBruto = faixaInfo.preco * qty;
