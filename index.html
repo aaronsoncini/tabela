@@ -551,6 +551,36 @@ const DIGITAL_UV = {
 
   //moleskine médio colorido
 
+  moleskine_medio_colorido_60x35: {
+    codigos: ['moleskine','caderno','12514'],
+    nome: 'Moleskine/Caderno Colorido Médio-130x180mm Gravação até 60x35mm',
+    badge: 'badge-digital',
+    minimo: 123.00,
+    faixas: [
+      { ate: 29,      preco: 123.00 / 29 },
+      { ate: Infinity, preco: 4.15 },
+    ],
+  },
+  moleskine_medio_colorido_70x90: {
+    codigos: ['moleskine','caderno','12514'],
+    nome: 'Moleskine/Caderno Colorido Médio-130x180mm Gravação até 70x90mm',
+    badge: 'badge-digital',
+    minimo: 123.00,
+    faixas: [
+      { ate: 22,      preco: 123.00 / 22 },
+      { ate: Infinity, preco: 5.40 },
+    ],
+  },
+  moleskine_medio_colorido_total: {
+    codigos: ['moleskine','caderno','12514'],
+    nome: 'Moleskine/Caderno Colorido Médio-130x180mm Gravação Total (Verificar Valor de Manuseio)',
+    badge: 'badge-digital',
+    minimo: 150.00,
+    faixas: [
+      { ate: 14,      preco: 150.00 / 14 },
+      { ate: Infinity, preco: 10.50 },
+    ],
+  },
 
   // ── FONES DE OUVIDO ──────────────────────────────────────────────────────────
   fone_pequeno_12789: {
@@ -701,7 +731,7 @@ const SILK = {
     ],
   },
   garrafas_gr2: {
-    codigos: ['garrafa','Ga6025','12487B','9139AS','94059'],
+    codigos: ['garrafa','Ga6025','12487B','9139AS','94059','9139I'],
     nome: 'Squeezes/Garrafas Grupo 02 - Alumínio (12487B)',
     badge: 'badge-garrafa',
     minimo: 165.00,
@@ -1509,7 +1539,7 @@ const LASER = {
 
   // ── GARRAFAS / SQUEEZES ──────────────────────────────────────────────────────
   garrafa_laser_gr1_pequena: {
-    codigos: ['9139I'],
+    codigos: ['garrafa','9139I'],
     nome: 'Garrafas Laser – Gravação 30x50mm',
     badge: 'badge-laser',
     minimo: 100.00,
@@ -1520,8 +1550,44 @@ const LASER = {
       { ate: Infinity, preco: 1.18 },
     ],
   },
+  garrafa_laser_gr2_pequena: {
+    codigos: ['garrafa','9139I'],
+    nome: 'Garrafas Laser – Gravação 30x100mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 54,       preco: 100.00 / 54 },
+      { ate: 500,      preco: 1.85 },
+      { ate: 1000,     preco: 1.79 },
+      { ate: Infinity, preco: 1.68 },
+    ],
+  },
+  garrafa_laser_gr3_pequena: {
+    codigos: ['garrafa','9139I'],
+    nome: 'Garrafas Laser – Gravação 35x50mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 47,       preco: 100.00 / 47 },
+      { ate: 500,      preco: 2.24 },
+      { ate: 1000,     preco: 2.15 },
+      { ate: Infinity, preco: 1.99 },
+    ],
+  },
+  garrafa_laser_gr4_pequena: {
+    codigos: ['garrafa','9139I'],
+    nome: 'Garrafas Laser – Gravação 35x100mm',
+    badge: 'badge-laser',
+    minimo: 100.00,
+    faixas: [
+      { ate: 38,       preco: 100.00 / 38 },
+      { ate: 500,      preco: 2.65 },
+      { ate: 1000,     preco: 2.40 },
+      { ate: Infinity, preco: 2.30 },
+    ],
+  },
   garrafa_laser_14846_pequena: {
-    codigos: ['14846'],
+    codigos: ['garrafa','14846'],
     nome: 'Garrafas Laser – Gravação 26x50mm',
     badge: 'badge-laser',
     minimo: 100.00,
@@ -1535,7 +1601,7 @@ const LASER = {
 
   // ── GARRAFAS TÉRMICAS ─────────────────────────────────────────────────────────
   garrafa_termica_pequena: {
-    codigos: ['01116'],
+    codigos: ['garrafa','01116'],
     nome: 'Garrafa Térmica até 1,5L – Gravação 35x50mm',
     badge: 'badge-laser',
     minimo: 100.00,
@@ -1547,7 +1613,7 @@ const LASER = {
     ],
   },
   garrafa_termica_grande: {
-    codigos: ['18679','18677'],
+    codigos: ['garrafa','18679','18677'],
     nome: 'Garrafa Térmica até 1,5L – Gravação 35x100mm',
     badge: 'badge-laser',
     minimo: 100.00,
